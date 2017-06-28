@@ -12,24 +12,59 @@
 //Prototipi
 int check_path_format(char * path);
 char * check_content_format(char content[]);
+struct directory * go_to_path_directory(struct directory * current_path, char path_local[]);
 
 
 //STRUTTURE DATI
 
+//Directory
+struct directory {
+    char * name;
+    struct directory * left_child;
+    struct directory * right_brother;
+    struct file * file_tree;
+} directory;
 
+struct directory * root;
+
+//File
+
+struct file {
+    struct file * file_brother;
+} file;
 
 
 
 int main(int argc, const char * argv[]) {
     
     //INIZIALIZZAZIONE STRUTTURE DATI
+    root=(struct directory *)malloc(sizeof(directory));
+    root->name="root";
     
+    //DEBUG ONLY
+    struct directory * temp0=(struct directory *)malloc(sizeof(directory));
+    temp0->name="folder0";
+    root->right_brother=temp0;
+    
+    
+    struct directory * temp2=(struct directory *)malloc(sizeof(directory));
+    temp2->name="folder0-1";
+    temp0->right_brother=temp2;
+    
+    struct directory * temp3=(struct directory *)malloc(sizeof(directory));
+    temp3->name="folder1";
+    temp0->left_child=temp3;
+    
+    struct directory * temp4=(struct directory *)malloc(sizeof(directory));
+    temp4->name="folder2";
+    temp3->left_child=temp4;
+
     
     
     
     
     //Lettura Comando, Percorso, Contenuto e Inserimento in Array Corrisponente
-    char temp[50];
+    char temp[200];
     char * command;
     char * path;
     char * content;
@@ -41,7 +76,7 @@ int main(int argc, const char * argv[]) {
     command=strtok(temp," ");
     path=strtok(NULL," ");
     content=strtok(NULL," ");
-
+    
    
     //Esecuzione del comando corretto
     
@@ -54,6 +89,7 @@ int main(int argc, const char * argv[]) {
         {
             //Operazione Create
             printf("percorso ok\n");
+            struct directory * temp_dir=go_to_path_directory(root,path);
         }
     }
     
@@ -89,7 +125,7 @@ int main(int argc, const char * argv[]) {
             if(content != NULL)
             {
                 printf("\nc: %s|stop\n", content);
-                //eseguo write
+                return 1;
             }
         }
     }
@@ -180,4 +216,40 @@ char * check_content_format(char content[])
     }
 }
 
+//Funzione per raggiungere una directory (current path deve essere inizializzato come root)
 
+struct directory * go_to_path_directory(struct directory * current_path, char path_local[])
+{
+    char * current_path_name=strtok(path_local,"/");
+    //printf("%s",current_path_name);
+    while(current_path_name!=NULL)
+    {
+        while(strcmp(current_path_name, current_path->name)!=0)
+        {
+            if(current_path==NULL) return NULL; //directory non esistente o nome di un file
+            current_path=current_path->right_brother;
+        }
+        current_path_name=strtok(NULL,"/");
+        if(current_path_name!=NULL) current_path=current_path->left_child;
+    }
+    printf("\npath directory name: %s ", current_path->name);
+    return current_path ;
+}
+
+/*
+struct directory * create_directory(struct directory * root, char path_local[])
+{
+    struct directory * new_directory;
+    struct directory * new_directory_path;
+
+    int last_path_before_new=strrchr(path_local, '/');
+    char * path_where_create_dir;
+    strncpy(path_where_create_dir,path_local,last_path_before_new);
+    new_directory_path=go_to_path_directory(root, path_where_create_dir);
+    new_directory=(struct directory *)malloc(sizeof(directory));
+    new_directory_path->right_brother=new_directory;
+    new_directory->name="test";
+   
+    
+    return
+}*/
