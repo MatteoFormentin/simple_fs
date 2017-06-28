@@ -9,16 +9,33 @@
 #include <stdio.h>
 #include <string.h>
 
+//Prototipi
 int check_path_format(char * path);
 char * check_content_format(char content[]);
 
+
+//STRUTTURE DATI
+
+
+
+
+
 int main(int argc, const char * argv[]) {
+    
+    //INIZIALIZZAZIONE STRUTTURE DATI
+    
+    
+    
+    
     
     //Lettura Comando, Percorso, Contenuto e Inserimento in Array Corrisponente
     char temp[50];
     char * command;
     char * path;
     char * content;
+    
+    //IMPORTANTE:INSERIRE WHILE NELLA VERSIONE DEFINITIVA
+    
     printf("inserire comando:\n ");
     gets(temp);
     command=strtok(temp," ");
@@ -69,8 +86,11 @@ int main(int argc, const char * argv[]) {
         if(check_path_format(path)==1)
         {
             content = check_content_format(content);
-            printf("\nc:  %s\n", content);
-            
+            if(content != NULL)
+            {
+                printf("\nc: %s|stop\n", content);
+                //eseguo write
+            }
         }
     }
     
@@ -137,18 +157,14 @@ int check_path_format(char path[])
 char * check_content_format(char content[])
 {
     //controlla lunghezza array
-    int last_element=0;
-    while(content[last_element]!='\0')
-    {
-        last_element++;
-    }
+    int last_element=strlen(content);
     last_element--;
     
     //controlla gli apici
     if(content[0]!='"' || content==NULL || content[last_element]!='"')
     {
         printf("\nerrore nel formato del contenuto!\n");
-        return 'a';
+        return NULL;
     }
     else //rimuovi gli apici
     {
