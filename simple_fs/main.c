@@ -261,10 +261,15 @@ struct directory * go_to_path_directory(struct directory * current_path, char pa
         if(current_path_name!=NULL && current_path->left_child!=NULL) current_path=current_path->left_child;
         else
         {
-            printf("non trovato\n");
-            return NULL;
-        };
+            break;
+        }
     }
+    if(current_path==NULL)
+    {
+        printf("non trovato\n");
+        return NULL;
+    }
+
     printf("trovato: %s\n", current_path->name);
     return current_path;
 }
@@ -276,10 +281,11 @@ struct directory * create_directory(struct directory * root, char path_local[])
     struct directory * new_directory_path;
 
     char * new_directory_name=NULL;
+    char * path_where_create_dir=NULL;
     unsigned int last_path_before_new=(unsigned int)(strrchr(path_local, '/')-path_local);
     if (last_path_before_new!=0)
     {
-        char * path_where_create_dir = (char *)malloc(last_path_before_new);
+        path_where_create_dir = (char *)malloc(last_path_before_new);
         strncpy(path_where_create_dir,path_local,last_path_before_new);
         path_where_create_dir[last_path_before_new] = '\0';
         printf("\npercorso dove creare la dir:%s\n", path_where_create_dir);
@@ -302,14 +308,10 @@ struct directory * create_directory(struct directory * root, char path_local[])
 
     }
     
-    
-    
-    
-    
     if(new_directory_path==NULL)
     {
         printf("non trovato2\n");
-        //free(path_where_create_dir);
+        free(path_where_create_dir);
         return NULL;
     }
     
@@ -342,7 +344,7 @@ struct directory * create_directory(struct directory * root, char path_local[])
     printf("\n\n%s\n\n", new_directory->name);
     go_to_path_directory(root, path_local);
     
-    //free(path_where_create_dir);
-    //free(new_directory_name);
+    free(path_where_create_dir);
+    free(new_directory_name);
     return new_directory;
 }
