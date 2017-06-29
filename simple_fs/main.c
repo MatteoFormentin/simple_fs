@@ -256,15 +256,39 @@ struct directory * create_directory(struct directory * root, char path_local[])
     struct directory * new_directory;
     struct directory * new_directory_path;
 
-    int last_path_before_new=(int)(strrchr(path_local, '/')-path_local);
-    char * path_where_create_dir;
+    unsigned int last_path_before_new=(unsigned int)(strrchr(path_local, '/')-path_local);
+    char * path_where_create_dir = (char *)malloc(last_path_before_new);
     strncpy(path_where_create_dir,path_local,last_path_before_new);
+    path_where_create_dir[last_path_before_new] = '\0';
+    printf("%s\n", path_where_create_dir);
     new_directory_path=go_to_path_directory(root, path_where_create_dir);
-    if(new_directory_path==NULL) return NULL;
+    if(new_directory_path==NULL)
+    {
+        printf("errore ricerca\n");
+        return NULL;
+    }
     new_directory=(struct directory *)malloc(sizeof(directory));
-    new_directory_path->right_brother=new_directory;
+    if (new_directory_path->left_child==NULL) new_directory_path->left_child=new_directory;
+    else
+    {
+        new_directory_path=new_directory_path->left_child;
+        while (new_directory_path->right_brother!=NULL)
+        {
+             new_directory_path=new_directory_path->right_brother;
+        }
+        new_directory_path->right_brother=new_directory;
+    }
+    new_directory->right_brother=NULL;
+    new_directory->file_tree=NULL;
+    char * new_directory_name=NULL;
+    /*for(int i=last_path_before_new; i<strlen(path_local); i++)
+    {
+        new_directory_name[i-strlen(path_local)]=path_local[i];
+    }*/
     new_directory->name="test";
-   
+    printf("\n\n%s\n\n", new_directory->name);
+    go_to_path_directory(root, path_local);
     
     return new_directory;
+    
 }
