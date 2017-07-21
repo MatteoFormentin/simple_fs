@@ -87,6 +87,7 @@ int main(int argc, const char * argv[]) {
     path=strtok(NULL," ");
     content=strtok(NULL," ");
     
+    printf("command: %s path: %s content: %s\n",command, path, content);
    
     //Esecuzione del comando corretto
     
@@ -277,8 +278,8 @@ struct directory * go_to_path_directory(struct directory * current_path, char pa
 
 struct directory * create_directory(struct directory * root, char path_local[])
 {
-    struct directory * new_directory;
-    struct directory * new_directory_path;
+    struct directory * new_directory=NULL;
+    struct directory * new_directory_path=NULL;
 
     char * new_directory_name=NULL;
     char * path_where_create_dir=NULL;
@@ -293,12 +294,13 @@ struct directory * create_directory(struct directory * root, char path_local[])
         new_directory_name=(char *)malloc(strlen(path_local)-last_path_before_new);
          for(int i=last_path_before_new; i<strlen(path_local); i++)
          {
-         new_directory_name[i-last_path_before_new]=path_local[i+1];
+             new_directory_name[i-last_path_before_new]=path_local[i+1];
          }
          new_directory_name[last_path_before_new]='\0';
     }
     else
     {
+        printf("Creazione in root\n");
         new_directory_path=root;
         new_directory_name=(char *)malloc(strlen(path_local));
         for(int i=0; i<strlen(path_local); i++)
@@ -308,32 +310,52 @@ struct directory * create_directory(struct directory * root, char path_local[])
 
     }
     
-    if(new_directory_path==NULL)
+    /*if(new_directory_path==NULL)
     {
         printf("non trovato2\n");
         free(path_where_create_dir);
         return NULL;
-    }
+    }*/
     
+    
+    //PROBLEMA: SE CASO 1 CREA LA DIRECTORY ANCHE SE CREATE_DIR /FOLDER/FOLDER1
     new_directory=(struct directory *)malloc(sizeof(directory));
-    if (new_directory_path->left_child==NULL) new_directory_path->left_child=new_directory;
+    if (new_directory_path->left_child==NULL)
+    {
+        new_directory_path->left_child=new_directory; //Caso 1: nessun figlio esistente
+        printf("\nCaso 1\n");
+    }
     else
     {
         new_directory_path=new_directory_path->left_child;
-        if(strcmp(new_directory_path->name, new_directory_name)==0)
+        
+        printf("new_directory_path->name %s\n", new_directory_path->name);
+        printf("new_directory_name %s\n", new_directory_name);
+        
+        
+        if(strcmp(new_directory_path->name, new_directory_name)==0) //Controllo se esiste una directory con lo stesso nome come primo figlio
         {
-            printf("directory già esistente\n");
+            printf("directory già esistente1\n");
+            printf("new_directory_path->name %s\n", new_directory_path->name);
+            printf("new_directory_name %s\n", new_directory_name);
+            free(new_directory);
             return NULL;
         }
-        while (new_directory_path->right_brother!=NULL)
+        //new_directory_path=new_directory_path->right_brother; //Se sono qua left child è già occupato->vai a destra
+        
+        
+        //!!!!!PROBLEMA NEL WHILE SUCCESSIVO!!!!!
+        
+        while (new_directory_path->right_brother!=NULL) //Caso 2: esistono dei figli->scorri fino alla prima posizione libera a destra
         {
-            if(strcmp(new_directory_path->name, new_directory_name)==0)
+            printf("new_directory_path->name2 %s\n", new_directory_path->name);
+            if(strcmp(new_directory_path->name, new_directory_name)==0) //Directory con lo stesso nome come figli successivi
             {
-                printf("directory già esistente\n");
+                printf("directory già esistente2\n");
+                free(new_directory);
                 return NULL;
             }
             new_directory_path=new_directory_path->right_brother;
-            
         }
         new_directory_path->right_brother=new_directory;
     }
@@ -341,10 +363,11 @@ struct directory * create_directory(struct directory * root, char path_local[])
     new_directory->right_brother=NULL;
     new_directory->file_tree=NULL;
     new_directory->name=new_directory_name;
-    printf("\n\n%s\n\n", new_directory->name);
+    printf("\nnew directory name: %s\n", new_directory->name);
     go_to_path_directory(root, path_local);
     
     free(path_where_create_dir);
     free(new_directory_name);
+    printf("ok\n");
     return new_directory;
 }
