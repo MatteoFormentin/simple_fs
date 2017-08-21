@@ -13,8 +13,13 @@
 //Prototipi
 int check_path_format(char * path);
 char * check_content_format(char content[]);
+
 struct directory * go_to_path_directory(struct directory * current_path, char path_local[]);
 struct directory * create_directory(struct directory * root, char path_local[]);
+
+struct file * go_to_path_file(struct directory * current_path, char path_local[]);
+struct file * create_file(struct directory * root, char path_local[]);
+struct file * write_file(struct directory * root, char path_local[], char content_local[]);
 
 //STRUTTURE DATI IMPORTANTE: INIZIALIZZARE A NULL I PUNTATORI SE NECESSARIO
 
@@ -32,6 +37,8 @@ struct directory * root;
 //File
 
 struct file {
+    char name[255];
+    char content[255];
     struct file * file_brother;
 } file;
 
@@ -44,12 +51,14 @@ int main(int argc, const char * argv[]) {
     strcpy(root,"root");
     root->right_brother=NULL;
     root->left_child=NULL;
+    root->file_tree=NULL;
     
     //DEBUG ONLY
     struct directory * temp0=(struct directory *)malloc(sizeof(directory));
     strcpy(temp0->name,"folder0");
     temp0->right_brother=NULL;
     root->left_child=temp0;
+    temp0->file_tree=NULL;
     
     struct directory * temp1=(struct directory *)malloc(sizeof(directory));
     strcpy(temp1->name,"folder1");
@@ -84,18 +93,18 @@ int main(int argc, const char * argv[]) {
     char * path;
     char * content;
     
-    //IMPORTANTE:INSERIRE WHILE NELLA VERSIONE DEFINITIVA
   
     while (1) {
    
-    printf("\n\n\n\ninserire comando:\n ");
+    printf("\n\n\n\ninserire comando:\n "); //DEBUG ONLY
     gets(buffer);
     command=strtok(buffer," ");
+    command[strlen(command)]='\0';
     path=strtok(NULL," ");
+    path[strlen(path)]='\0';
     content=strtok(NULL," ");
-    
-    printf("command: %s path: %s content: %s\n",command, path, content);
-   
+    if(content!=NULL) content[strlen(content)]='\0';
+        printf("content: %s", content);
     //Esecuzione del comando corretto
     
     
@@ -111,7 +120,7 @@ int main(int argc, const char * argv[]) {
         {
             //Operazione Create
             
-            struct directory * temp_dir=go_to_path_directory(root,path);
+            struct file * temp_file=create_file(root,path);
         }
     }
     
@@ -145,11 +154,14 @@ int main(int argc, const char * argv[]) {
         if(check_path_format(path)==1)
         {
             content = check_content_format(content);
-            if(content != NULL)
+            printf("content: %s", content);
+
+            /*if(content != NULL)
             {
                 printf("\nc: %s|stop\n", content);
                 return 1;
-            }
+            }*/
+            write_file(root, path, content);
         }
     }
     
@@ -214,14 +226,15 @@ int check_path_format(char path[])
 //Controlla se l'ingresso ha gli apici e li rimuove
 char * check_content_format(char content[])
 {
+    
     //controlla lunghezza array
     int last_element=strlen(content);
     last_element--;
-    
+    if(last_element==0) return NULL;
     //controlla gli apici
     if(content[0]!='"' || content==NULL || content[last_element]!='"')
     {
-        printf("\nerrore nel formato del contenuto!\n");
+        printf("\nerrore nel formato del contenuto!\n first el: %c, last el: %c", content[0], content[last_element]);
         return NULL;
     }
     else //rimuovi gli apici
@@ -234,6 +247,8 @@ char * check_content_format(char content[])
             string_without_apices[i-1]=content[i];
             i++;
         }
+        string_without_apices[strlen(string_without_apices)]='\0';
+
         return string_without_apices;
     }
 }
@@ -300,18 +315,21 @@ struct directory * create_directory(struct directory * root, char path_local[])
         path_where_create_dir = (char *)malloc(last_path_before_new);
         strncpy(path_where_create_dir,path_local,last_path_before_new);
         path_where_create_dir[last_path_before_new] = '\0';
-        printf("\n CREAZIONE NON IN ROOT \n percorso dove creare la dir:%s\n", path_where_create_dir); //DEBUG ONLY
         new_directory_path=go_to_path_directory(root, path_where_create_dir);
     
-        if(new_directory_path==NULL) return NULL; //Percorso creazione non trovato
-               
+        if(new_directory_path==NULL)
+        {
+            printf("\nPercorso creazione non trovato, return\n");
+            return NULL; //Percorso creazione non trovato
+        }
+        
         //Estrazione nome cratella dal parametro percorso
         new_directory_name=(char *)malloc(strlen(path_local)-last_path_before_new);
          for(int i=last_path_before_new; i<strlen(path_local); i++)
          {
              new_directory_name[i-last_path_before_new]=path_local[i+1];
          }
-         new_directory_name[last_path_before_new]='\0';
+         new_directory_name[last_path_before_new+2]='\0';
     }
     
     //Caso creazione in root
@@ -335,19 +353,10 @@ struct directory * create_directory(struct directory * root, char path_local[])
     new_directory->file_tree=NULL;
     strcpy(new_directory->name, new_directory_name);
     
-    
-    /*for(int i=0; i<strlen(new_directory_name); i++)
-    {
-        new_directory->name[i]=new_directory_name[i];
-    }*/
-   
-    
-    
     //Caso 1: nessun figlio sinistro esistente
     if (new_directory_path->left_child==NULL)
     {
-        new_directory_path->left_child=new_directory; //Caso 1: nessun figlio esistente
-        printf("\nCaso 1: nessun figlio esistente\n"); //DEBUG ONLY
+        new_directory_path->left_child=new_directory;
     }
     
     //Caso 2: figlio sinistro esistente
@@ -355,18 +364,13 @@ struct directory * create_directory(struct directory * root, char path_local[])
     {
         new_directory_path=new_directory_path->left_child;
         
-        printf("\nCaso 2: figlio esistente\n"); //DEBUG ONLY
-        printf("new_directory_path->name (cartella primo figlio) %s\n", new_directory_path->name); //DEBUG ONLY
-        printf("new_directory_name %s\n", new_directory_name);
-        
-        
         //???POTREBBE ESSERE SUPERFLUO???
         if(strcmp(new_directory_path->name, new_directory_name)==0) //Controllo se esiste una directory con lo stesso nome come primo figlio
         {
-            printf("directory già esistente 2-1\n"); //DEBUG ONLY
-            printf("new_directory_path->name 2-1 %s\n", new_directory_path->name); //DEBUG ONLY
-            printf("new_directory_name %s\n", new_directory_name); //DEBUG ONLY
+            printf("directory già esistente, return\n"); //DEBUG ONLY
             free(new_directory);
+            free(path_where_create_dir);
+            free(new_directory_name);
             return NULL;
         }
         
@@ -376,23 +380,231 @@ struct directory * create_directory(struct directory * root, char path_local[])
             //printf("new_directory_path->name 2-2 (cartella attualmente controllata dal ciclo) %s\n", new_directory_path->name);
             if(strcmp(new_directory_path->name, new_directory_name)==0) //Directory con lo stesso nome come figli successivi
             {
-                printf("directory già esistente 2-2\n");
+                printf("directory già esistente, return\n");
                 free(new_directory);
+                free(path_where_create_dir);
+                free(new_directory_name);
                 return NULL;
             }
             new_directory_path=new_directory_path->right_brother;
-            printf("new_directory_path->name 2-2 (cartella attualmente controllata dal ciclo) %s\n", new_directory_path->name);
         }
         
         new_directory_path->right_brother=new_directory;
     }
-    
-    
-    printf("\nnew directory name: %s\n", new_directory->name); //DEBUG ONLY
-    // go_to_path_directory(root, path_local); //TEST CREAZIONE -- DEBUG ONLY
     
     free(path_where_create_dir);
     free(new_directory_name);
     printf("ok\n");
     return new_directory;
 }
+
+struct file * create_file(struct directory * root, char path_local[])
+{
+    
+    char * new_file_name=NULL;
+    char * path_where_create_file=NULL;
+    
+    struct directory * container_directory_path=NULL;
+
+    
+    unsigned int last_path_before_new=(unsigned int)(strrchr(path_local, '/')-path_local); //Controllo se sono in root
+    
+    //Caso creazione non in root
+    if (last_path_before_new!=0)
+    {
+        
+        //Estrazione percorso dal parametro percorso
+        path_where_create_file = (char *)malloc(last_path_before_new);
+        strncpy(path_where_create_file,path_local,last_path_before_new);
+        path_where_create_file[last_path_before_new] = '\0';
+        container_directory_path=go_to_path_directory(root, path_where_create_file);
+        
+        if(container_directory_path==NULL)
+        {
+            printf("\nPercorso creazione non trovato, return\n");
+            return NULL; //Percorso creazione non trovato
+        }
+        
+        //Estrazione nome file dal parametro percorso
+        new_file_name=(char *)malloc(strlen(path_local)-last_path_before_new);
+        for(int i=last_path_before_new; i<strlen(path_local); i++)
+        {
+            new_file_name[i-last_path_before_new]=path_local[i+1];
+        }
+        new_file_name[last_path_before_new+2]='\0';
+    }
+    
+    //Caso creazione in root
+    else
+    {
+        printf("\nCreazione in root\n"); //DEBUG ONLY
+        container_directory_path=root;
+        new_file_name=(char *)malloc(strlen(path_local)-last_path_before_new);
+        int i;
+        for(i=0; i<strlen(path_local); i++)
+        {
+            new_file_name[i]=path_local[i+1];
+        }
+        new_file_name[i+1]='\0';
+    }
+    
+    
+    struct file * new_file=malloc(sizeof(struct file));
+    strcpy(new_file->name, new_file_name);
+    new_file->file_brother=NULL;
+    
+    //Caso 1: nessun figlio esistente
+    if (container_directory_path->file_tree==NULL)
+    {
+        container_directory_path->file_tree=new_file;
+    }
+    else
+    {
+        struct file * file_prec=container_directory_path->file_tree;
+        
+        if(strcmp(new_file->name, file_prec->name)==0) //Controllo se esiste una directory con lo stesso nome come primo figlio
+        {
+            printf("directory già esistente, return\n"); //DEBUG ONLY
+            free(new_file_name);
+            free(path_where_create_file);
+            free(new_file);
+            return NULL;
+        }
+        
+        while (file_prec->file_brother!=NULL) {
+            if(strcmp(new_file->name, file_prec->name)==0) //Controllo se esiste una directory con lo stesso nome come primo figlio
+            {
+                printf("directory già esistente, return\n"); //DEBUG ONLY
+                free(new_file_name);
+                free(path_where_create_file);
+                free(new_file);
+                return NULL;
+            }
+            file_prec=file_prec->file_brother;
+        }
+        file_prec->file_brother=new_file;
+    }
+    printf("ok\n");
+    return new_file;
+}
+
+
+struct file * go_to_path_file(struct directory * current_path, char path_local[])
+{
+    char * file_name=NULL;
+    char * container_directory_name=NULL;
+    
+    struct directory * container_directory_path=NULL;
+    
+    
+    unsigned int last_path_before_new=(unsigned int)(strrchr(path_local, '/')-path_local); //Controllo se sono in root
+    
+    //Caso file non in root
+    if (last_path_before_new!=0)
+    {
+        
+        //Estrazione percorso dal parametro percorso
+        container_directory_name = (char *)malloc(last_path_before_new);
+        strncpy(container_directory_name,path_local,last_path_before_new);
+        container_directory_name[last_path_before_new] = '\0';
+        container_directory_path=go_to_path_directory(root, container_directory_name);
+        
+        if(container_directory_path==NULL)
+        {
+            printf("\nPercorso cartella container non trovato, return\n");
+            return NULL; //Percorso creazione non trovato
+        }
+        
+        //Estrazione nome file dal parametro percorso
+        file_name=(char *)malloc(strlen(path_local)-last_path_before_new);
+        for(int i=last_path_before_new; i<strlen(path_local); i++)
+        {
+            file_name[i-last_path_before_new]=path_local[i+1];
+        }
+        file_name[last_path_before_new+2]='\0';
+    }
+    
+    //Caso file in root
+    else
+    {
+        container_directory_path=root;
+        container_directory_path=(char *)malloc(strlen(path_local));
+        int i;
+        for(i=0; i<strlen(path_local); i++)
+        {
+            file_name[i]=path_local[i+1];
+        }
+        file_name[i+1]='\0';
+    }
+    
+    //Ricerca del file nel sottoalbero file
+    
+    struct file * current_file=container_directory_path->file_tree;
+    
+    if(current_file==NULL)
+    {
+        printf("\nNessun file nella cartella\n");
+        return NULL; //Percorso creazione non trovato
+    }
+    
+    if(strcmp(current_file->name, file_name)==0) //Controllo se esiste una directory con lo stesso nome come primo figlio
+    {
+        printf("file trovato\n"); //DEBUG ONLY
+        free(file_name);
+        free(container_directory_name);
+        return current_file;
+    }
+    
+    while (current_file->file_brother!=NULL) {
+        if(strcmp(current_file->name, file_name)==0) //Controllo se esiste una directory con lo stesso nome come primo figlio
+        {
+            printf("file trovato\n"); //DEBUG ONLY
+            free(file_name);
+            free(container_directory_name);
+            return current_file;
+        }
+        current_file=current_file->file_brother;
+    }
+    
+     printf("file NON trovato\n"); //DEBUG ONLY
+    return NULL;
+
+}
+
+
+
+
+
+struct file * write_file(struct directory * root, char path_local[], char content_local[])
+{
+    struct file * file_to_write=go_to_path_file(root, path_local);
+    printf("\ncontent local: %s", content_local);
+    if(file_to_write==NULL)
+    {
+        printf("\nPercorso file non trovato, return\n");
+        return NULL; //Percorso creazione non trovato
+    }
+    else
+    {
+        strcpy(file_to_write->content, content_local);
+        return file_to_write;
+    }
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
