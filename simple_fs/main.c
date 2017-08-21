@@ -25,7 +25,7 @@ struct directory * create_directory(struct directory * root, char path_local[]);
 
 struct file * go_to_path_file(struct directory * current_path, char path_local[]);
 struct file * create_file(struct directory * root, char path_local[]);
-struct file * write_file(struct directory * root, char path_local[], char content_local[]);
+struct file * write_file(struct directory * root, char path_local[], char * content_local);
 struct file * read_file(struct directory * root, char path_local[]);
 
 void find(struct directory * root, char name[]);
@@ -169,13 +169,7 @@ int main(int argc, const char * argv[]) {
         if(check_path_format(path, command)==1)
         {
             content = check_content_format(content);
-            printf("content: %s", content);
-
-            /*if(content != NULL)
-            {
-                printf("\nc: %s|stop\n", content);
-                return 1;
-            }*/
+            printf("content: %s\n", content);
             write_file(root, path, content);
         }
     }
@@ -262,8 +256,10 @@ char * check_content_format(char content[])
             string_without_apices[i-1]=content[i];
             i++;
         }
-        string_without_apices[strlen(string_without_apices)]='\0';
-
+        string_without_apices[last_element-1]='\0';
+       
+        
+        
         return string_without_apices;
     }
 }
@@ -541,7 +537,7 @@ struct file * go_to_path_file(struct directory * current_path, char path_local[]
     else
     {
         container_directory_path=root;
-        container_directory_path=(char *)malloc(strlen(path_local));
+        file_name=(char *)malloc(strlen(path_local));
         int i;
         for(i=0; i<strlen(path_local); i++)
         {
@@ -588,7 +584,7 @@ struct file * go_to_path_file(struct directory * current_path, char path_local[]
 
 
 
-struct file * write_file(struct directory * root, char path_local[], char content_local[])
+struct file * write_file(struct directory * root, char path_local[], char * content_local)
 {
     struct file * file_to_write=go_to_path_file(root, path_local);
     printf("\ncontent local: %s", content_local);
