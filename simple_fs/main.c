@@ -6,12 +6,18 @@
 //  Copyright © 2017 Matteo Formentin. All rights reserved.
 //
 
+
+//!!!SISTEMARE CONTENT!!!
+
+
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 //Prototipi
-int check_path_format(char * path);
+int check_path_format(char * path, char command[]);
 char * check_content_format(char content[]);
 
 struct directory * go_to_path_directory(struct directory * current_path, char path_local[]);
@@ -20,6 +26,9 @@ struct directory * create_directory(struct directory * root, char path_local[]);
 struct file * go_to_path_file(struct directory * current_path, char path_local[]);
 struct file * create_file(struct directory * root, char path_local[]);
 struct file * write_file(struct directory * root, char path_local[], char content_local[]);
+struct file * read_file(struct directory * root, char path_local[]);
+
+void find(struct directory * root, char name[]);
 
 //STRUTTURE DATI IMPORTANTE: INIZIALIZZARE A NULL I PUNTATORI SE NECESSARIO
 
@@ -64,6 +73,7 @@ int main(int argc, const char * argv[]) {
     strcpy(temp1->name,"folder1");
     temp1->left_child=NULL;
     temp0->right_brother=temp1;
+    temp1->file_tree=NULL;
 
     
     struct directory * temp2=(struct directory *)malloc(sizeof(directory));
@@ -81,6 +91,11 @@ int main(int argc, const char * argv[]) {
     temp4->left_child=NULL;
      temp4->right_brother=NULL;
     temp3->right_brother=temp4;
+    
+    struct file * file0=(struct file *)malloc(sizeof(file));
+    strcpy(file0->name,"file0");
+    strcpy(file0->content,"test");
+    temp0->file_tree=file0;
     
 
     
@@ -104,7 +119,7 @@ int main(int argc, const char * argv[]) {
     path[strlen(path)]='\0';
     content=strtok(NULL," ");
     if(content!=NULL) content[strlen(content)]='\0';
-        printf("content: %s", content);
+    printf("content: %s", content);
     //Esecuzione del comando corretto
     
     
@@ -116,7 +131,7 @@ int main(int argc, const char * argv[]) {
     if(strcmp(command, "create")==0)
     {
         printf("comando: create\n");
-        if(check_path_format(path)==1)
+        if(check_path_format(path, command)==1)
         {
             //Operazione Create
             
@@ -128,7 +143,7 @@ int main(int argc, const char * argv[]) {
     else if(strcmp(command, "create_dir")==0)
     {
         printf("comando: create_dir\n");
-        if(check_path_format(path)==1)
+        if(check_path_format(path, command)==1)
         {
             //Operazione create_dir
             
@@ -141,9 +156,9 @@ int main(int argc, const char * argv[]) {
     else if(strcmp(command, "read")==0)
     {
         printf("comando: read");
-        if(check_path_format(path)==1)
+        if(check_path_format(path, command)==1)
         {
-            //Operazione read
+            read_file(root, path);
         }
     }
     
@@ -151,7 +166,7 @@ int main(int argc, const char * argv[]) {
     else if(strcmp(command, "write")==0)
     {
         printf("comando: write");
-        if(check_path_format(path)==1)
+        if(check_path_format(path, command)==1)
         {
             content = check_content_format(content);
             printf("content: %s", content);
@@ -169,7 +184,7 @@ int main(int argc, const char * argv[]) {
     else if(strcmp(command, "delete")==0)
     {
         printf("comando: delete");
-        if(check_path_format(path)==1)
+        if(check_path_format(path, command)==1)
         {
             //Operazione delete
         }
@@ -179,7 +194,7 @@ int main(int argc, const char * argv[]) {
     else if(strcmp(command, "delete_r")==0)
     {
         printf("comando: delete_r");
-        if(check_path_format(path)==1)
+        if(check_path_format(path, command)==1)
         {
             //Operazione delete_r
         }
@@ -189,9 +204,9 @@ int main(int argc, const char * argv[]) {
     else if(strcmp(command, "find")==0)
     {
         printf("comando: find");
-        if(check_path_format(path)==1)
+        if(check_path_format(path, command)==1)
         {
-            //Operazione find
+            find(root, path);
         }
     }
     
@@ -213,9 +228,9 @@ int main(int argc, const char * argv[]) {
 
 //FUNZIONI CONTROLLO CORRETTEZZA INPUT - IMPORTANTE: CONTROLLARE SE SERVE ESCLUDERE INPUT CON PATH O CONTENUTO DOVE NON PREVISTO
 
-int check_path_format(char path[])
+int check_path_format(char path[], char command[])
 {
-    if(path[0]!='/' || path==NULL)
+    if((path[0]!='/' || path==NULL) && strcmp(command, "find")!=0)
     {
         printf("\nerrore nel formato del percorso!\n");
         return -1;
@@ -277,8 +292,6 @@ struct directory * go_to_path_directory(struct directory * current_path, char pa
                 return NULL;
             }
         }
-        
-        //IMPORTANTE: CONTROLLARE USCITA DAL CICLO
         
         current_path_name=strtok(NULL,"/");
         if(current_path_name!=NULL && current_path->left_child!=NULL) current_path=current_path->left_child;
@@ -587,14 +600,75 @@ struct file * write_file(struct directory * root, char path_local[], char conten
     else
     {
         strcpy(file_to_write->content, content_local);
+        printf("ok\n %d", strlen(content_local));
         return file_to_write;
     }
     
 }
 
 
+struct file * read_file(struct directory * root, char path_local[])
+{
+    struct file * file_to_read=go_to_path_file(root, path_local);
+    if(file_to_read==NULL)
+    {
+        printf("no\n");
+        return NULL; //Percorso creazione non trovato
+    }
+    else
+    {
+        printf("contenuto %s",file_to_read->content);
+        return file_to_read;
+    }
+}
 
+void find(struct directory * root, char name[])
+{
+    struct directory * current_level=root;
+    struct directory * current_directory=root;
+    struct directory * first_directory_level=root;
+    struct file * current_file=NULL;
+    
+    char percorso[1024];
+    strcpy(percorso,"/");
 
+    
+    while(current_level!=NULL)
+    {
+        first_directory_level=current_level;
+        current_directory=first_directory_level;
+        while (current_directory!=NULL)
+        {
+            if(strcmp(current_directory->name, name)==0)
+            {
+                strcat(percorso, current_directory->name);
+                strcat(percorso, "/");
+                printf("\ntrovato come directory");
+                printf("\npercorso: %s", percorso);
+                return;
+            }
+            current_file=current_directory->file_tree;
+            while (current_file!=NULL) {
+                if(strcmp(current_file->name, name)==0)
+                {
+                    strcat(percorso, current_directory->name);
+                    strcat(percorso, "/");
+                    strcat(percorso, current_file->name);
+                    printf("\ntrovato come file\n");
+                    printf("\npercorso: %s", percorso);
+                    return;
+                }
+                current_file=current_file->file_brother;
+            }
+            
+            current_directory=current_directory->right_brother;
+        }
+        
+        current_level=current_level->left_child;
+
+    }
+    printf("NON trovato");
+}
 
 
 
