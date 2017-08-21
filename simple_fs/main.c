@@ -21,7 +21,7 @@ struct directory * create_directory(struct directory * root, char path_local[]);
 //Directory
 
 struct directory {
-    char * name;
+    char name[255];
     struct directory * left_child;
     struct directory * right_brother;
     struct file * file_tree;
@@ -41,31 +41,38 @@ int main(int argc, const char * argv[]) {
     
     //INIZIALIZZAZIONE STRUTTURE DATI
     root=(struct directory *)malloc(sizeof(directory));
-    root->name="root";
+    strcpy(root,"root");
     root->right_brother=NULL;
     root->left_child=NULL;
     
-   /* //DEBUG ONLY
+    //DEBUG ONLY
     struct directory * temp0=(struct directory *)malloc(sizeof(directory));
-    temp0->name="folder0";
+    strcpy(temp0->name,"folder0");
     temp0->right_brother=NULL;
     root->left_child=temp0;
     
+    struct directory * temp1=(struct directory *)malloc(sizeof(directory));
+    strcpy(temp1->name,"folder1");
+    temp1->left_child=NULL;
+    temp0->right_brother=temp1;
+
     
     struct directory * temp2=(struct directory *)malloc(sizeof(directory));
-    temp2->name="folder0-1";
-    temp2->right_brother=NULL;
-    temp0->right_brother=temp2;
+    strcpy(temp2->name,"folder2");
+    temp2->left_child=NULL;
+    temp1->right_brother=temp2;
     
     struct directory * temp3=(struct directory *)malloc(sizeof(directory));
-    temp3->name="folder1";
-    temp3->right_brother=NULL;
-    temp0->left_child=temp3;
+    strcpy(temp3->name,"folder3");;
+    temp3->left_child=NULL;
+    temp2->right_brother=temp3;
     
     struct directory * temp4=(struct directory *)malloc(sizeof(directory));
-    temp4->name="folder2";
-    temp4->right_brother=NULL;
-    temp3->left_child=temp4;*/
+    strcpy(temp4->name,"folder4");;
+    temp4->left_child=NULL;
+     temp4->right_brother=NULL;
+    temp3->right_brother=temp4;
+    
 
     
     
@@ -81,7 +88,7 @@ int main(int argc, const char * argv[]) {
   
     while (1) {
    
-    printf("inserire comando:\n ");
+    printf("\n\n\n\ninserire comando:\n ");
     gets(buffer);
     command=strtok(buffer," ");
     path=strtok(NULL," ");
@@ -278,19 +285,27 @@ struct directory * go_to_path_directory(struct directory * current_path, char pa
 
 struct directory * create_directory(struct directory * root, char path_local[])
 {
-    struct directory * new_directory=NULL;
     struct directory * new_directory_path=NULL;
 
     char * new_directory_name=NULL;
     char * path_where_create_dir=NULL;
-    unsigned int last_path_before_new=(unsigned int)(strrchr(path_local, '/')-path_local);
+    
+    unsigned int last_path_before_new=(unsigned int)(strrchr(path_local, '/')-path_local); //Controllo se sono in root
+   
+    //Caso creazione non in root
     if (last_path_before_new!=0)
     {
+        
+        //Estrazione percorso dal parametro percorso
         path_where_create_dir = (char *)malloc(last_path_before_new);
         strncpy(path_where_create_dir,path_local,last_path_before_new);
         path_where_create_dir[last_path_before_new] = '\0';
-        printf("\npercorso dove creare la dir:%s\n", path_where_create_dir);
+        printf("\n CREAZIONE NON IN ROOT \n percorso dove creare la dir:%s\n", path_where_create_dir); //DEBUG ONLY
         new_directory_path=go_to_path_directory(root, path_where_create_dir);
+    
+        if(new_directory_path==NULL) return NULL; //Percorso creazione non trovato
+               
+        //Estrazione nome cratella dal parametro percorso
         new_directory_name=(char *)malloc(strlen(path_local)-last_path_before_new);
          for(int i=last_path_before_new; i<strlen(path_local); i++)
          {
@@ -298,73 +313,83 @@ struct directory * create_directory(struct directory * root, char path_local[])
          }
          new_directory_name[last_path_before_new]='\0';
     }
+    
+    //Caso creazione in root
     else
     {
-        printf("Creazione in root\n");
+        printf("\nCreazione in root\n"); //DEBUG ONLY
         new_directory_path=root;
         new_directory_name=(char *)malloc(strlen(path_local));
-        for(int i=0; i<strlen(path_local); i++)
+        int i;
+        for(i=0; i<strlen(path_local); i++)
         {
             new_directory_name[i]=path_local[i+1];
         }
-
+        new_directory_name[i+1]='\0';
     }
     
-    /*if(new_directory_path==NULL)
+    //Creazione in memoria della cartella (non ancora nell'albero)
+    struct directory * new_directory=malloc(sizeof(struct directory));
+    new_directory->left_child=NULL;
+    new_directory->right_brother=NULL;
+    new_directory->file_tree=NULL;
+    strcpy(new_directory->name, new_directory_name);
+    
+    
+    /*for(int i=0; i<strlen(new_directory_name); i++)
     {
-        printf("non trovato2\n");
-        free(path_where_create_dir);
-        return NULL;
+        new_directory->name[i]=new_directory_name[i];
     }*/
+   
     
     
-    //PROBLEMA: SE CASO 1 CREA LA DIRECTORY ANCHE SE CREATE_DIR /FOLDER/FOLDER1
-    new_directory=(struct directory *)malloc(sizeof(directory));
+    //Caso 1: nessun figlio sinistro esistente
     if (new_directory_path->left_child==NULL)
     {
         new_directory_path->left_child=new_directory; //Caso 1: nessun figlio esistente
-        printf("\nCaso 1\n");
+        printf("\nCaso 1: nessun figlio esistente\n"); //DEBUG ONLY
     }
+    
+    //Caso 2: figlio sinistro esistente
     else
     {
         new_directory_path=new_directory_path->left_child;
         
-        printf("new_directory_path->name %s\n", new_directory_path->name);
+        printf("\nCaso 2: figlio esistente\n"); //DEBUG ONLY
+        printf("new_directory_path->name (cartella primo figlio) %s\n", new_directory_path->name); //DEBUG ONLY
         printf("new_directory_name %s\n", new_directory_name);
         
         
+        //???POTREBBE ESSERE SUPERFLUO???
         if(strcmp(new_directory_path->name, new_directory_name)==0) //Controllo se esiste una directory con lo stesso nome come primo figlio
         {
-            printf("directory già esistente1\n");
-            printf("new_directory_path->name %s\n", new_directory_path->name);
-            printf("new_directory_name %s\n", new_directory_name);
+            printf("directory già esistente 2-1\n"); //DEBUG ONLY
+            printf("new_directory_path->name 2-1 %s\n", new_directory_path->name); //DEBUG ONLY
+            printf("new_directory_name %s\n", new_directory_name); //DEBUG ONLY
             free(new_directory);
             return NULL;
         }
-        //new_directory_path=new_directory_path->right_brother; //Se sono qua left child è già occupato->vai a destra
         
-        
-        //!!!!!PROBLEMA NEL WHILE SUCCESSIVO!!!!!
         
         while (new_directory_path->right_brother!=NULL) //Caso 2: esistono dei figli->scorri fino alla prima posizione libera a destra
         {
-            printf("new_directory_path->name2 %s\n", new_directory_path->name);
+            //printf("new_directory_path->name 2-2 (cartella attualmente controllata dal ciclo) %s\n", new_directory_path->name);
             if(strcmp(new_directory_path->name, new_directory_name)==0) //Directory con lo stesso nome come figli successivi
             {
-                printf("directory già esistente2\n");
+                printf("directory già esistente 2-2\n");
                 free(new_directory);
                 return NULL;
             }
             new_directory_path=new_directory_path->right_brother;
+            printf("new_directory_path->name 2-2 (cartella attualmente controllata dal ciclo) %s\n", new_directory_path->name);
         }
+        
         new_directory_path->right_brother=new_directory;
     }
-    new_directory->left_child=NULL;
-    new_directory->right_brother=NULL;
-    new_directory->file_tree=NULL;
-    new_directory->name=new_directory_name;
-    printf("\nnew directory name: %s\n", new_directory->name);
-    go_to_path_directory(root, path_local);
+    
+    
+    printf("\nnew directory name: %s\n", new_directory->name); //DEBUG ONLY
+    // go_to_path_directory(root, path_local); //TEST CREAZIONE -- DEBUG ONLY
     
     free(path_where_create_dir);
     free(new_directory_name);
