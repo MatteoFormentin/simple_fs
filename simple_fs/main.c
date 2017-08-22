@@ -112,19 +112,31 @@ int main(int argc, const char * argv[]) {
     while (1) {
    
     printf("\n\n\n\ninserire comando:\n "); //DEBUG ONLY
+        
+        
+    //Acquisizione comando-percorso-contenuto
     gets(buffer);
+        
     command=strtok(buffer," ");
-    command[strlen(command)]='\0';
+    if(command!=NULL) command[strlen(command)]='\0';
+        
     path=strtok(NULL," ");
-    path[strlen(path)]='\0';
+    if(path!=NULL) path[strlen(path)]='\0';
+        
     content=strtok(NULL," ");
     if(content!=NULL) content[strlen(content)]='\0';
-    printf("content: %s", content);
+        
+        
+        
     //Esecuzione del comando corretto
     
     
     //Conttrollo null ingresso
-    if (command==NULL) return -1;
+    if (command==NULL)
+    {
+        printf("inserire un comando seguito da invio!"); //DEBUG ONLY
+        continue;
+    }
    
     
     //CREATE
@@ -169,8 +181,11 @@ int main(int argc, const char * argv[]) {
         if(check_path_format(path, command)==1)
         {
             content = check_content_format(content);
-            printf("content: %s\n", content);
-            write_file(root, path, content);
+            if(content!=NULL)
+            {
+                printf("\ncontent: %s\n", content);
+                write_file(root, path, content);
+            }
         }
     }
     
@@ -217,7 +232,7 @@ int main(int argc, const char * argv[]) {
         printf("comando non valido\n");
     }
 
-}
+    }
 }
 
 //FUNZIONI CONTROLLO CORRETTEZZA INPUT - IMPORTANTE: CONTROLLARE SE SERVE ESCLUDERE INPUT CON PATH O CONTENUTO DOVE NON PREVISTO
@@ -243,12 +258,12 @@ char * check_content_format(char content[])
     //controlla gli apici
     if(content[0]!='"' || content==NULL || content[last_element]!='"')
     {
-        printf("\nerrore nel formato del contenuto!\n first el: %c, last el: %c", content[0], content[last_element]);
+        printf("\nerrore nel formato del contenuto!");
+        if(content==NULL) printf("\ncontenuto null\n");
         return NULL;
     }
     else //rimuovi gli apici
     {
-        printf("\ncontenuto ok\n");
         char string_without_apices[last_element];
         int i=1;
         while(i<last_element)
@@ -257,8 +272,6 @@ char * check_content_format(char content[])
             i++;
         }
         string_without_apices[last_element-1]='\0';
-       
-        
         
         return string_without_apices;
     }
@@ -273,7 +286,6 @@ struct directory * go_to_path_directory(struct directory * current_path, char pa
     if(current_path==NULL)
     {
         return root;
-        
     }
     char * current_path_name=strtok(path_local,"/");
     while(current_path_name!=NULL) //percorro i livelli ramo sinistro
@@ -301,8 +313,6 @@ struct directory * go_to_path_directory(struct directory * current_path, char pa
         printf("non trovato\n");
         return NULL;
     }
-
-    printf("trovato: %s\n", current_path->name);
     return current_path;
 }
 
@@ -587,7 +597,7 @@ struct file * go_to_path_file(struct directory * current_path, char path_local[]
 struct file * write_file(struct directory * root, char path_local[], char * content_local)
 {
     struct file * file_to_write=go_to_path_file(root, path_local);
-    printf("\ncontent local: %s", content_local);
+    printf("\ncontent local: %s\n", content_local);
     if(file_to_write==NULL)
     {
         printf("\nPercorso file non trovato, return\n");
@@ -595,8 +605,9 @@ struct file * write_file(struct directory * root, char path_local[], char * cont
     }
     else
     {
+        memset(file_to_write->content, '\0', 255);
         strcpy(file_to_write->content, content_local);
-        printf("ok\n %d", strlen(content_local));
+        printf("ok %d\n", strlen(content_local));
         return file_to_write;
     }
     
@@ -667,7 +678,16 @@ void find(struct directory * root, char name[])
 }
 
 
-
+void delete(struct directory * root, char path_local[]){
+    struct directory * directory_to_delete=go_to_path_file(root, path_local);
+    if(directory_to_delete!=NULL && directory_to_delete->left_child==NULL){
+        if(directory_to_delete->right_brother==NULL)
+        {
+            free(directory_to_delete);
+        }
+        if(
+    }
+}
 
 
 
