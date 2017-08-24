@@ -40,7 +40,8 @@ struct file * write_file(struct directory * root, char path_local[], char * cont
 struct file * read_file(struct directory * root, char path_local[]);
 
 void find(struct directory * root, char name[]);
-void delete(struct directory * root, char path_local[]);
+void delete(struct directory * root, char path_local[], int flag);
+void delete_child(struct directory * father);
 
 //STRUTTURE DATI IMPORTANTE: INIZIALIZZARE A NULL I PUNTATORI SE NECESSARIO
 
@@ -114,6 +115,20 @@ int main(int argc, const char * argv[]) {
     
 
     
+    create_directory(root, "/folder0/folder0");
+    create_directory(root, "/folder0/folder1");
+    create_directory(root, "/folder0/folder2");
+    create_directory(root, "/folder0/folder3");
+    create_directory(root, "/folder0/folder4");
+    create_directory(root, "/folder0/folder0/folder0");
+    create_directory(root, "/folder0/folder0/folder1");
+    create_directory(root, "/folder0/folder0/folder2");
+    create_directory(root, "/folder0/folder0/folder3");
+    create_directory(root, "/folder0/folder0/folder0/folder0");
+    create_directory(root, "/folder0/folder0/folder0/folder1");
+    create_directory(root, "/folder0/folder0/folder0/folder2");
+    create_directory(root, "/folder0/folder0/folder0/folder3");
+
     
     
     
@@ -157,7 +172,6 @@ int main(int argc, const char * argv[]) {
     //CREATE
     if(strcmp(command, "create")==0)
     {
-        printf("comando: create\n");
         if(check_path_format(path, command)==1)
         {
             //Operazione Create
@@ -169,7 +183,6 @@ int main(int argc, const char * argv[]) {
     //CREATE_DIR
     else if(strcmp(command, "create_dir")==0)
     {
-        printf("comando: create_dir\n");
         if(check_path_format(path, command)==1)
         {
             //Operazione create_dir
@@ -182,7 +195,6 @@ int main(int argc, const char * argv[]) {
     //READ
     else if(strcmp(command, "read")==0)
     {
-        printf("comando: read");
         if(check_path_format(path, command)==1)
         {
             read_file(root, path);
@@ -192,7 +204,6 @@ int main(int argc, const char * argv[]) {
     //WRITE
     else if(strcmp(command, "write")==0)
     {
-        printf("comando: write");
         if(check_path_format(path, command)==1)
         {
             content = check_content_format(content);
@@ -207,27 +218,24 @@ int main(int argc, const char * argv[]) {
     //DELETE
     else if(strcmp(command, "delete")==0)
     {
-        printf("comando: delete");
         if(check_path_format(path, command)==1)
         {
-            delete(root, path);
+            delete(root, path, 0);
         }
     }
     
     //DELETE_R
     else if(strcmp(command, "delete_r")==0)
     {
-        printf("comando: delete_r");
         if(check_path_format(path, command)==1)
         {
-            //Operazione delete_r
+            delete(root, path, 1);
         }
     }
     
     //FIND
     else if(strcmp(command, "find")==0)
     {
-        printf("comando: find");
         if(check_path_format(path, command)==1)
         {
             find(root, path);
@@ -237,14 +245,12 @@ int main(int argc, const char * argv[]) {
     //EXIT
     else if(strcmp(command, "exit")==0)
     {
-        printf("comando: exit");
         return 1;
     }
         
         
-    else if(strcmp(command, "vai")==0)
+    else if(strcmp(command, "vai")==0) //DEBUG ONLY
     {
-        printf("comando: vai");
         if(check_path_format(path, command)==1)
         {
             struct directory * temp_dir=go_to_path_directory(root, path);
@@ -308,7 +314,7 @@ char * check_content_format(char content[])
 
 struct directory * go_to_path_directory(struct directory * current_path, char path_local[])
 {
-    
+    prec_folder=current_path;
     current_path=current_path->left_child;
     if(current_path==NULL) //Albero vuoto
     {
@@ -735,7 +741,7 @@ void find(struct directory * root, char name[])
 }
 
 
-void delete(struct directory * root, char path_local[]){
+void delete(struct directory * root, char path_local[], int flag){
     prec_folder=NULL;
     prec_file=NULL;
     char * path_local2 = (char *)malloc(strlen(path_local));
@@ -746,7 +752,7 @@ void delete(struct directory * root, char path_local[]){
     //Delete directory
     if(directory_to_delete!=NULL) //Necessario per escludere il ricorsivo
     {
-        if(directory_to_delete->left_child==NULL || directory_to_delete->file_tree==NULL)
+        if((directory_to_delete->left_child==NULL || directory_to_delete->file_tree==NULL) && flag==0 )
         {
             printf("\nfile nella cartella");
             return;
@@ -757,12 +763,10 @@ void delete(struct directory * root, char path_local[]){
             if(directory_to_delete->right_brother==NULL)
             {
                 prec_folder->right_brother=NULL;
-                free(directory_to_delete);
             }
             else
             {
                 prec_folder->right_brother=directory_to_delete->right_brother;
-                free(directory_to_delete);
             }
         }
         
@@ -771,16 +775,22 @@ void delete(struct directory * root, char path_local[]){
             if(directory_to_delete->right_brother==NULL)
             {
                 prec_folder->left_child=NULL;
-                free(directory_to_delete);
             }
         
             else
             {
                 prec_folder->left_child=directory_to_delete->right_brother;
-                free(directory_to_delete);
             }
+            
         }
-        else printf("\ncaso non considerato");
+        
+        if(flag==1) //Delete ricorsiva
+        {
+            delete_child(directory_to_delete);
+        }
+        
+        free(directory_to_delete);
+        
         free(path_local2);
         return;
     }
@@ -796,12 +806,10 @@ void delete(struct directory * root, char path_local[]){
                 if(file_to_delete->file_brother==NULL)
                 {
                     prec_folder->file_tree=NULL;
-                    free(file_to_delete);
                 }
                 else
                 {
                     prec_folder->file_tree=file_to_delete->file_brother;
-                    free(file_to_delete);
                 }
             }
             
@@ -810,22 +818,35 @@ void delete(struct directory * root, char path_local[]){
                 if(file_to_delete->file_brother==NULL)
                 {
                     prec_file->file_brother=NULL;
-                    free(file_to_delete);
                 }
                 
                 else
                 {
                     prec_file->file_brother=file_to_delete->file_brother;
-                    free(file_to_delete);
                 }
             }
-            else printf("\ncaso non considerato");
+            
+            free(file_to_delete);
         }
     }
     else printf("\nla directory contiene figli o non èstata trovata!");
     free(path_local2);
 }
-
+                         
+void delete_child(struct directory * father){
+    
+    struct directory * first=father->left_child;
+    struct directory * current=first;
+    struct directory * prec=current;
+    
+    while (current!=NULL)
+    {
+        if (current->left_child!=NULL) delete_child(current);
+        prec=current;
+        if(current->right_brother!=NULL) current=current->right_brother;
+        free(prec);
+    }
+}
 
 
 
