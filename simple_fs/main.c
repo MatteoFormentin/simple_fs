@@ -76,7 +76,7 @@ int main(int argc, const char * argv[]) {
     root->left_child=NULL;
     root->file_tree=NULL;
     
-    /*
+    
     //DEBUG ONLY
     create_directory(root, "/folder0");
     create_directory(root, "/folder1");
@@ -97,11 +97,16 @@ int main(int argc, const char * argv[]) {
     create_directory(root, "/folder0/folder0/folder3");
     create_directory(root, "/folder0/folder0/folder10/folder20");
     create_file(root, "/folder0/folder0/folder10/folder20/file");
+    create_file(root, "/folder0/folder0/folder10/folder20/file1");
+    create_file(root, "/folder0/folder0/folder10/folder20/file2");
+    create_file(root, "/folder0/folder0/folder10/folder20/file3");
+    create_file(root, "/folder0/folder0/folder10/folder20/file4");
+    create_file(root, "/folder0/folder0/folder10/folder20/file5");
     create_directory(root, "/folder0/folder0/folder0/folder1");
     create_directory(root, "/folder0/folder0/folder0/folder2");
     create_directory(root, "/folder0/folder0/folder0/folder3");
     
-    */
+    
     
     
     //Lettura Comando, Percorso, Contenuto e Inserimento in Array Corrisponente
@@ -856,19 +861,19 @@ void delete_child(struct directory * directory)
         delete_child(directory->right_brother);
     }
     
-    /*
+
     if(directory->file_tree!=NULL)
     {
         struct file * file=directory->file_tree;
         struct file * prec=file;
         
-        while(file!=NULL);
+        while(file!=NULL)
         {
             prec=file;
             file=file->file_brother;
             free(prec);
         }
-    }*/
+    }
     
     free(directory);
 
