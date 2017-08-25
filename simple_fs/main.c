@@ -78,41 +78,6 @@ int main(int argc, const char * argv[]) {
     
     /*
     //DEBUG ONLY
-    struct directory * temp0=(struct directory *)malloc(sizeof(directory));
-    strcpy(temp0->name,"folder0");
-    temp0->right_brother=NULL;
-    root->left_child=temp0;
-    temp0->file_tree=NULL;
-    
-    struct directory * temp1=(struct directory *)malloc(sizeof(directory));
-    strcpy(temp1->name,"folder1");
-    temp1->left_child=NULL;
-    temp0->right_brother=temp1;
-    temp1->file_tree=NULL;
-
-    
-    struct directory * temp2=(struct directory *)malloc(sizeof(directory));
-    strcpy(temp2->name,"folder2");
-    temp2->left_child=NULL;
-    temp1->right_brother=temp2;
-    
-    struct directory * temp3=(struct directory *)malloc(sizeof(directory));
-    strcpy(temp3->name,"folder3");;
-    temp3->left_child=NULL;
-    temp2->right_brother=temp3;
-    
-    struct directory * temp4=(struct directory *)malloc(sizeof(directory));
-    strcpy(temp4->name,"folder4");;
-    temp4->left_child=NULL;
-     temp4->right_brother=NULL;
-    temp3->right_brother=temp4;
-    
-    struct file * file0=(struct file *)malloc(sizeof(file));
-    strcpy(file0->name,"file0");
-    strcpy(file0->content,"test");
-    temp0->file_tree=file0;
-    
-*/
     create_directory(root, "/folder0");
     create_directory(root, "/folder1");
     create_directory(root, "/folder0/folder0");
@@ -136,7 +101,7 @@ int main(int argc, const char * argv[]) {
     create_directory(root, "/folder0/folder0/folder0/folder2");
     create_directory(root, "/folder0/folder0/folder0/folder3");
     
-    
+    */
     
     
     //Lettura Comando, Percorso, Contenuto e Inserimento in Array Corrisponente
@@ -759,7 +724,8 @@ int find(struct directory * current_directory, char name[], char percorso[])
         
     }
     
-    return 0;
+    if(flag_trovato==1)return 1;
+    else return 0;
 }
 
 
