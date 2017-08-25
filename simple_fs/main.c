@@ -10,8 +10,8 @@
 /*                !!!BUG NOTI!!!
  *  1-La creazione directory va a buon fine anche se si tenta la creazione in una subdirectory inesistente RISOLTO
  *  2-il contenuto della write viene troncato agli spazi
- *  3-Problemi nel passaggio del parametro "contenuto" nella write (contenuto errato) RISOLTO
- *  4-create_directory(root, "/folder0/folder0") crea /folder0 se non esiste invece di ritornare errore
+ *
+ *  
  *
  *
  *
@@ -127,13 +127,10 @@ int main(int argc, const char * argv[]) {
         
         buffer=(char *)malloc(20000);
         fgets(buffer, 20000, stdin);
-        command=(char *)malloc(sizeof(buffer));
-        path=(char *)malloc(sizeof(buffer));
-        content=(char *)malloc(sizeof(buffer));
-
+        buffer[strlen(buffer)-1]='\0';
         
-        fgets(buffer, 20000, stdin);
-        sscanf(buffer, "%s %s %s", command, path, content);
+
+        //sscanf(buffer, "%s %s %s", command, path, content);
 
         //!!!DOPO UN PO SI BLOCCA QUI
         
@@ -142,7 +139,7 @@ int main(int argc, const char * argv[]) {
         
         
         
-        /*
+        
          command=strtok(buffer," ");
          if(command!=NULL) command[strlen(command)]='\0';
         
@@ -151,7 +148,8 @@ int main(int argc, const char * argv[]) {
         
          content=strtok(NULL," ");
          if(content!=NULL) content[strlen(content)]='\0';
-         memset(buffer, '\0', 200000);
+       
+        /* memset(buffer, '\0', 200000);
          strcpy(buffer,"\0");*/
         
         
