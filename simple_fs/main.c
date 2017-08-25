@@ -76,6 +76,7 @@ int main(int argc, const char * argv[]) {
     root->left_child=NULL;
     root->file_tree=NULL;
     
+    /*
     
     //DEBUG ONLY
     create_directory(root, "/folder0");
@@ -107,155 +108,177 @@ int main(int argc, const char * argv[]) {
     create_directory(root, "/folder0/folder0/folder0/folder3");
     
     
-    
+    */
     
     //Lettura Comando, Percorso, Contenuto e Inserimento in Array Corrisponente
-    char buffer[200];
-    char * command;
-    char * path;
-    char * content;
+    char * buffer= NULL;
+    char * command = NULL;
+    char * path = NULL;
+    char * content = NULL;
     
   
     while (1) {
    
-    //printf("\n\n\n\ninserire comando:\n "); //DEBUG ONLY
+        // printf("\n\n\n\ninserire comando:\n "); //DEBUG ONLY
         
         
-    //Acquisizione comando-percorso-contenuto
-    gets(buffer);
-        
-    command=strtok(buffer," ");
-    if(command!=NULL) command[strlen(command)]='\0';
-        
-    path=strtok(NULL," ");
-    if(path!=NULL) path[strlen(path)]='\0';
-        
-    content=strtok(NULL," ");
-    if(content!=NULL) content[strlen(content)]='\0';
+        //Acquisizione comando-percorso-contenuto
         
         
+        buffer=(char *)malloc(20000);
+        fgets(buffer, 20000, stdin);
+        command=(char *)malloc(sizeof(buffer));
+        path=(char *)malloc(sizeof(buffer));
+        content=(char *)malloc(sizeof(buffer));
+
         
-    //Esecuzione del comando corretto
+        fgets(buffer, 20000, stdin);
+        sscanf(buffer, "%s %s %s", command, path, content);
+
+        //!!!DOPO UN PO SI BLOCCA QUI
+        
+        /*printf("lettura....");
+         printf("\nletto: %s\n", num);*/
+        
+        
+        
+        /*
+         command=strtok(buffer," ");
+         if(command!=NULL) command[strlen(command)]='\0';
+        
+         path=strtok(NULL," ");
+         if(path!=NULL) path[strlen(path)]='\0';
+        
+         content=strtok(NULL," ");
+         if(content!=NULL) content[strlen(content)]='\0';
+         memset(buffer, '\0', 200000);
+         strcpy(buffer,"\0");*/
+        
+        
+        //Esecuzione del comando corretto
     
     
-    //Conttrollo null ingresso
-    if (command==NULL)
-    {
-        //printf("inserire un comando seguito da invio!"); //DEBUG ONLY
-        continue;
-    }
+        //Conttrollo null ingresso
+        if (command==NULL)
+        {
+            //printf("inserire un comando seguito da invio!"); //DEBUG ONLY
+            continue;
+        }
    
     
-    //CREATE
-    if(strcmp(command, "create")==0)
-    {
-        if(check_path_format(path, command)==1)
+        //CREATE
+        if(strcmp(command, "create")==0)
         {
-            create_file(root,path);
-        }
-        else printf("no\n");
-    }
-    
-    //CREATE_DIR
-    else if(strcmp(command, "create_dir")==0)
-    {
-        if(check_path_format(path, command)==1)
-        {
-            create_directory(root, path);
-        }
-        else printf("no\n");
-    }
-    
-    //READ
-    else if(strcmp(command, "read")==0)
-    {
-        if(check_path_format(path, command)==1)
-        {
-            read_file(root, path);
-        }
-        else printf("no\n");
-    }
-    
-    //WRITE
-    else if(strcmp(command, "write")==0)
-    {
-        if(check_path_format(path, command)==1)
-        {
-            content = check_content_format(content);
-            if(content!=NULL)
+            if(check_path_format(path, command)==1)
             {
-                //printf("\ncontent: %s\n", content); //DEBUG ONLY
-                write_file(root, path, content);
+                create_file(root,path);
             }
             else printf("no\n");
         }
-    }
     
-    //DELETE
-    else if(strcmp(command, "delete")==0)
-    {
-        if(check_path_format(path, command)==1)
+        //CREATE_DIR
+        else if(strcmp(command, "create_dir")==0)
         {
-            delete(root, path, 0);
+            if(check_path_format(path, command)==1)
+            {
+                create_directory(root, path);
+            }
+            else printf("no\n");
         }
-        else printf("no\n");
-    }
     
-    //DELETE_R
-    else if(strcmp(command, "delete_r")==0)
-    {
-        if(check_path_format(path, command)==1)
+        //READ
+        else if(strcmp(command, "read")==0)
         {
-            delete(root, path, 1);
+            if(check_path_format(path, command)==1)
+            {
+                read_file(root, path);
+            }
+            else printf("no\n");
         }
-        else printf("no\n");
-    }
     
-    //FIND
-    else if(strcmp(command, "find")==0)
-    {
-        if(check_path_format(path, command)==1)
+        //WRITE
+        else if(strcmp(command, "write")==0)
         {
-            char percorso[10240];
-            memset(percorso, '/0', 10240);
-            strcpy(percorso,"/");
-            if(find(root, path, percorso)==0) printf("no\n");
-            //printf("ok %s", percorso);
+            if(check_path_format(path, command)==1)
+            {
+                content = check_content_format(content);
+                if(content!=NULL && strlen(path)<=255)
+                {
+                    //printf("\ncontent: %s\n", content); //DEBUG ONLY
+                    write_file(root, path, content);
+                }
+                else printf("no\n");
+            }
         }
-        else printf("no\n");
-    }
     
-    //EXIT
-    else if(strcmp(command, "exit")==0)
-    {
-        return 0;
-    }
+        //DELETE
+        else if(strcmp(command, "delete")==0)
+        {
+            if(check_path_format(path, command)==1)
+            {
+                delete(root, path, 0);
+            }
+            else printf("no\n");
+        }
+    
+        //DELETE_R
+        else if(strcmp(command, "delete_r")==0)
+        {
+            if(check_path_format(path, command)==1)
+            {
+                delete(root, path, 1);
+            }
+            else printf("no\n");
+        }
+        
+        //FIND
+        else if(strcmp(command, "find")==0)
+        {
+            if(check_path_format(path, command)==1)
+            {
+                char percorso[10240];
+                memset(percorso, '/0', 10240);
+                strcpy(percorso,"/");
+                if(find(root, path, percorso)==0) printf("no\n");
+                //printf("ok %s", percorso);
+            }
+            else printf("no\n");
+        }
+        
+        //EXIT
+        else if(strcmp(command, "exit")==0)
+        {
+            return 0;
+        }
         
         
-    else if(strcmp(command, "vai")==0) //DEBUG ONLY
-    {
-        if(check_path_format(path, command)==1)
+        else if(strcmp(command, "vai")==0) //DEBUG ONLY
         {
-            struct directory * temp_dir=go_to_path_directory(root, path);
-            if(temp_dir!=NULL)
-                printf("\ntrovato: %s", temp_dir->name);
+            if(check_path_format(path, command)==1)
+            {
+                struct directory * temp_dir=go_to_path_directory(root, path);
+                if(temp_dir!=NULL)
+                    printf("\ntrovato: %s", temp_dir->name);
+            }
         }
+        
+        //ERRORE INPUT COMANDO
+        else
+        {
+            //printf("comando non valido\n"); //DEBUG ONLY
+        }
+        
     }
     
-    //ERRORE INPUT COMANDO
-    else
-    {
-        //printf("comando non valido\n"); //DEBUG ONLY
-    }
-
-    }
+    free(buffer);
 }
 
 //FUNZIONI CONTROLLO CORRETTEZZA INPUT - IMPORTANTE: CONTROLLARE SE SERVE ESCLUDERE INPUT CON PATH O CONTENUTO DOVE NON PREVISTO
 
 int check_path_format(char path[], char command[])
 {
-    if((path[0]!='/' || path==NULL) && strcmp(command, "find")!=0)
+    if(path==NULL) return -1;
+    if((path[0]!='/') && strcmp(command, "find")!=0)
     {
         //printf("\nerrore nel formato del percorso!\n"); //DEBUG ONLY
         return -1;
@@ -304,7 +327,7 @@ struct directory * go_to_path_directory(struct directory * current_path, char pa
     current_path=current_path->left_child;
     if(current_path==NULL) //Albero vuoto
     {
-        return root;
+        return NULL;
     }
     char * current_path_name=strtok(path_local,"/");
     while(current_path_name!=NULL) //percorro i livelli ramo sinistro
@@ -390,6 +413,13 @@ struct directory * create_directory(struct directory * root, char path_local[])
         }
         new_directory_name[i+1]='\0';
     }
+    
+    if(strlen(new_directory_name)>255)
+    {
+        printf("no\n");
+        return NULL;
+    }
+    
     
     //Creazione in memoria della cartella (non ancora nell'albero)
     struct directory * new_directory=malloc(sizeof(struct directory));
@@ -502,6 +532,13 @@ struct file * create_file(struct directory * root, char path_local[])
             new_file_name[i]=path_local[i+1];
         }
         new_file_name[i+1]='\0';
+    }
+    
+    
+    if(strlen(new_file_name)>255)
+    {
+        printf("no\n");
+        return NULL;
     }
     
     
@@ -833,21 +870,6 @@ void delete(struct directory * root, char path_local[], int flag)
     else printf("no\n");
     free(path_local2);
 }
-  /*
-void delete_child(struct directory * father){
-    
-    struct directory * first=father->left_child;
-    struct directory * current=first;
-    struct directory * prec=current;
-    
-    while (current!=NULL)
-    {
-        if (current->left_child!=NULL) delete_child(current);
-        prec=current;
-        if(current->right_brother!=NULL) current=current->right_brother;
-        free(prec);
-    }
-}*/
 
 
 void delete_child(struct directory * directory)
