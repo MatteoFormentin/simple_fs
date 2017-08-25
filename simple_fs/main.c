@@ -503,6 +503,7 @@ struct file * create_file(struct directory * root, char path_local[])
     struct file * new_file=malloc(sizeof(struct file));
     strcpy(new_file->name, new_file_name);
     new_file->file_brother=NULL;
+    //memset(new_file->name, '\0', 255);
     
     //Caso 1: nessun figlio esistente
     if (container_directory_path->file_tree==NULL)
@@ -817,6 +818,9 @@ void delete(struct directory * root, char path_local[], int flag)
                 }
             }
             
+            //free(file_to_delete->name);
+            memset(file_to_delete->content, '\0', 255);
+            strcpy(file_to_delete->name, "\0");
             free(file_to_delete);
             printf("ok\n");
         }
