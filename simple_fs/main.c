@@ -1,6 +1,8 @@
 //
 //  main.c
-//  simple_fs
+//
+//  simple_fs - Simple File System
+//  Progetto API - Algoritmi e Strutture Dati 2017
 //
 //  Created by Matteo Formentin on 27/06/17.
 //  Copyright © 2017 Matteo Formentin. All rights reserved.
@@ -8,15 +10,14 @@
 
 
 /*                !!!BUG NOTI!!!
- *  1-La creazione directory va a buon fine anche se si tenta la creazione in una subdirectory inesistente RISOLTO
- *  2-il contenuto della write viene troncato agli spazi
- *
- *  
- *
- *
- *
+ *  1-il contenuto della write viene troncato agli spazi
+ *  2-Errore nell'cquisizione di stdin lunghi
  */
 
+/*                !!!DA FARE!!!
+ *  1-Max figli 255 e risorse nella stessa cartella 1024
+ *  2-Fix contenuto write troncato agli spazi
+ */
 
 
 
@@ -26,7 +27,7 @@
 
 //Prototipi
 int check_path_format(char * path, char command[]);
-char * check_content_format(char content[]);
+int check_content_format(char content[]);
 
 struct directory * go_to_path_directory(struct directory * current_path, char path_local[]);
 struct directory * create_directory(struct directory * root, char path_local[]);
@@ -65,13 +66,18 @@ struct file {
     struct file * file_brother;
 } file;
 
+//Comando, Percorso, Contenuto
+char * buffer= NULL;
+char * command = NULL;
+char * path = NULL;
+char content[255];
 
 
 int main(int argc, const char * argv[]) {
     
     //INIZIALIZZAZIONE STRUTTURE DATI
     root=(struct directory *)malloc(sizeof(directory));
-    strcpy(root,"root");
+    strcpy(root->name,"root");
     root->right_brother=NULL;
     root->left_child=NULL;
     root->file_tree=NULL;
@@ -110,11 +116,7 @@ int main(int argc, const char * argv[]) {
     
     */
     
-    //Lettura Comando, Percorso, Contenuto e Inserimento in Array Corrisponente
-    char * buffer= NULL;
-    char * command = NULL;
-    char * path = NULL;
-    char * content = NULL;
+
     
   
     while (1) {
@@ -123,40 +125,44 @@ int main(int argc, const char * argv[]) {
         
         
         //Acquisizione comando-percorso-contenuto
-        
-        
-        buffer=(char *)malloc(20000);
-        fgets(buffer, 20000, stdin);
+        buffer=(char *)calloc(20000, sizeof(char));
+        if(fgets(buffer, 20000, stdin)==NULL)
         buffer[strlen(buffer)-1]='\0';
+        //printf("ho letto!!\n");
         
-
-        //sscanf(buffer, "%s %s %s", command, path, content);
-
+        
         //!!!DOPO UN PO SI BLOCCA QUI
         
-        /*printf("lettura....");
-         printf("\nletto: %s\n", num);*/
         
+        //Split buffer
+        command=strtok(buffer," ");
+        if(command!=NULL) command[strlen(command)]='\0';
         
+        path=strtok(NULL," \n");
+        if(path!=NULL) path[strlen(path)]='\0';
+    
+        //content=(char *)calloc(20000, sizeof(char));
+        memset(content, '\0', 255);
+        char * temp;
+        temp=strtok(NULL," \n");
+        if(temp!=NULL)
+        {
+            strcpy(content, temp);
+            
+            while((temp=strtok(NULL, " \n"))!=NULL)
+            {
+                strcat(content, " ");
+                strcat(content, temp);
+            }
+        }
         
-        
-         command=strtok(buffer," ");
-         if(command!=NULL) command[strlen(command)]='\0';
-        
-         path=strtok(NULL," ");
-         if(path!=NULL) path[strlen(path)]='\0';
-        
-         content=strtok(NULL," ");
-         if(content!=NULL) content[strlen(content)]='\0';
+        //if(content!=NULL) content[strlen(content)-1]='\0';
        
-        /* memset(buffer, '\0', 200000);
-         strcpy(buffer,"\0");*/
-        
+        //printf("\n%s\n", content);
         
         //Esecuzione del comando corretto
     
-    
-        //Conttrollo null ingresso
+        //Controllo NULL ingresso
         if (command==NULL)
         {
             //printf("inserire un comando seguito da invio!"); //DEBUG ONLY
@@ -199,8 +205,7 @@ int main(int argc, const char * argv[]) {
         {
             if(check_path_format(path, command)==1)
             {
-                content = check_content_format(content);
-                if(content!=NULL && strlen(path)<=255)
+                if(check_content_format(content)!=0 && strlen(path)<=255)
                 {
                     //printf("\ncontent: %s\n", content); //DEBUG ONLY
                     write_file(root, path, content);
@@ -235,7 +240,7 @@ int main(int argc, const char * argv[]) {
             if(check_path_format(path, command)==1)
             {
                 char percorso[10240];
-                memset(percorso, '/0', 10240);
+                memset(percorso, '\0', 10240);
                 strcpy(percorso,"/");
                 if(find(root, path, percorso)==0) printf("no\n");
                 //printf("ok %s", percorso);
@@ -266,9 +271,8 @@ int main(int argc, const char * argv[]) {
             //printf("comando non valido\n"); //DEBUG ONLY
         }
         
+        free(buffer);
     }
-    
-    free(buffer);
 }
 
 //FUNZIONI CONTROLLO CORRETTEZZA INPUT - IMPORTANTE: CONTROLLARE SE SERVE ESCLUDERE INPUT CON PATH O CONTENUTO DOVE NON PREVISTO
@@ -285,22 +289,22 @@ int check_path_format(char path[], char command[])
 }
 
 //Controlla se l'ingresso ha gli apici e li rimuove
-char * check_content_format(char content[])
+int check_content_format(char content_local[])
 {
-    if(content==NULL)
+    if(content_local==NULL)
     {
-        return NULL;
+        return 0;
     }
     //controlla lunghezza array
-    int last_element=strlen(content);
+    int last_element=(int)strlen(content_local);
     last_element--;
-    if(last_element==0) return NULL;
+    if(last_element==0) return 0;
     //controlla gli apici
-    if(content[0]!='"' || content==NULL || content[last_element]!='"')
+    if(content_local[0]!='"' || content_local==NULL || content_local[last_element]!='"')
     {
        // printf("\nerrore nel formato del contenuto!"); //DEBUG ONLY
         //if(content==NULL) printf("\ncontenuto null\n"); //DEBUG ONLY
-        return NULL;
+        return 0;
     }
     else //rimuovi gli apici
     {
@@ -308,13 +312,13 @@ char * check_content_format(char content[])
         int i=1;
         while(i<last_element)
         {
-            string_without_apices[i-1]=content[i];
+            string_without_apices[i-1]=content_local[i];
             i++;
         }
         string_without_apices[last_element-1]='\0';
-        
-        return string_without_apices;
+        strcpy(content, string_without_apices);
     }
+    return 1;
 }
 
 //Funzione per raggiungere una directory (current path deve essere inizializzato come root)
@@ -701,7 +705,7 @@ struct file * write_file(struct directory * root, char path_local[], char * cont
     {
         memset(file_to_write->content, '\0', 255);
         strcpy(file_to_write->content, content_local);
-        printf("ok %d\n", strlen(content_local));
+        printf("ok %d\n", (int)strlen(content_local));
         return file_to_write;
     }
     
@@ -738,7 +742,7 @@ int find(struct directory * current_directory, char name[], char percorso[])
         
         flag_trovato=find(current_directory->left_child, name, percorso);
         
-        for(int i=(strlen(percorso)-strlen(current_directory->name))-1;i<strlen(percorso);i++) percorso[i]='\0';
+        for(int i=((int)strlen(percorso)-(int)strlen(current_directory->name))-1;i<(int)strlen(percorso);i++) percorso[i]='\0';
     }
     if(current_directory->right_brother!=NULL)
     {
