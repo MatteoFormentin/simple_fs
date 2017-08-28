@@ -82,7 +82,7 @@ int main(int argc, const char * argv[]) {
     root->left_child=NULL;
     root->file_tree=NULL;
     
-    
+    /*
     //DEBUG ONLY
     create_directory(root, "/dir0rid");
     create_directory(root, "/dir0rid/dir0rid");
@@ -125,7 +125,7 @@ int main(int argc, const char * argv[]) {
     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
    create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
 
-
+*/
     
     
 
@@ -280,7 +280,7 @@ int main(int argc, const char * argv[]) {
         //ERRORE INPUT COMANDO
         else
         {
-            printf("comando non valido\n"); //DEBUG ONLY
+            //printf("comando non valido\n"); //DEBUG ONLY
         }
         
         free(buffer);
@@ -354,14 +354,14 @@ struct directory * go_to_path_directory(struct directory * current_path, char pa
             prec_folder=current_path;
             current_path=current_path->right_brother;
             
-            //DEBUG ONLY START
+            /*//DEBUG ONLY START
             if(current_path!=NULL) {if(strcmp(current_path->name, "")==0 ) printf(" vuoto ");
                 else printf("%s", current_path->name);}
-            //DEBUG ONLY END
+            //DEBUG ONLY END*/
             
             if(current_path==NULL) //Se una directory padre non c'è ritorna null
             {
-                printf("non trovato1 "); //DEBUG ONLY
+               // printf("non trovato1 "); //DEBUG ONLY
                 return NULL;
             }
         }
@@ -372,15 +372,15 @@ struct directory * go_to_path_directory(struct directory * current_path, char pa
             prec_folder=current_path;
             current_path=current_path->left_child;
             
-            //DEBUG ONLY START
+          /*  //DEBUG ONLY START
             if(strcmp(current_path->name, "")==0 ) printf("vuoto ");
             else printf("%s ", current_path->name);
-            //DEBUG ONLY END
+            //DEBUG ONLY END*/
             
         }
         else if(current_path_name!=NULL && current_path->left_child==NULL)
         {
-            printf("non trovato 2 "); //DEBUG ONLY
+           // printf("non trovato 2 "); //DEBUG ONLY
             return NULL;
         }
         else //Se non ci sono più cartelle nel nome percorso ho trovato la cartella
@@ -413,9 +413,9 @@ struct directory * create_directory(struct directory * root, char path_local[])
         
         if(new_directory_path==NULL)
         {
-            printf("\nPercorso creazione non trovato, return "); //DEBUG ONLY
+            //printf("\nPercorso creazione non trovato, return "); //DEBUG ONLY
             printf("no\n");
-            printf("\n"); //DEBUG ONLY
+            //printf("\n"); //DEBUG ONLY
             free(path_where_create_dir);
             return NULL; //Percorso creazione non trovato
         }
@@ -461,10 +461,10 @@ struct directory * create_directory(struct directory * root, char path_local[])
     strcpy(new_directory->name, "\0");
     strcpy(new_directory->name, new_directory_name);
     
-    //DEBUG ONLY
+   /* //DEBUG ONLY
     if (strcmp(new_directory->name,"")==0) {
         printf(" errore nella copia del nome");
-    }
+    }*/
     
     //Caso 1: nessun figlio sinistro esistente
     if (new_directory_path->left_child==NULL)
@@ -518,10 +518,10 @@ struct directory * create_directory(struct directory * root, char path_local[])
     free(path_where_create_dir);
     free(new_directory_name);
     //new_directory=go_to_path_directory(root, path);
-    printf("\ncontent name: %s name: %s ",new_directory_path->name, new_directory->name); //DEBUG ONLY
+    //printf("\ncontent name: %s name: %s ",new_directory_path->name, new_directory->name); //DEBUG ONLY
     
     printf("ok\n");
-    printf("\n"); //DEBUG ONLY
+    //printf("\n"); //DEBUG ONLY
     return new_directory;
 }
 
@@ -751,9 +751,10 @@ struct file * write_file(struct directory * root, char path_local[], char * cont
     }
     else
     {
-        strcpy(file_to_write->name, "\0");
+        strcpy(file_to_write->content, "\0");
         strcpy(file_to_write->content, content_local);
         printf("ok %d\n", (int)strlen(content_local));
+        //printf(" %s \n", file_to_write->content); //DEBUG ONLY
         return file_to_write;
     }
     
@@ -766,12 +767,12 @@ struct file * read_file(struct directory * root, char path_local[])
     if(file_to_read==NULL)
     {
         printf("no\n");
-        return NULL; //Percorso creazione non trovato
+        return NULL; //Percorso file non trovato
     }
     else
     {
         if(strcmp(file_to_read->content,"")==0) printf("contenuto \n");
-        else printf("contenuto %s\n",file_to_read->content);
+        else printf("contenuto %s\n", file_to_read->content);
         return file_to_read;
     }
 }
@@ -914,7 +915,7 @@ void delete(struct directory * root, char path_local[], int flag)
             
             //free(file_to_delete->name);
             //memset(file_to_delete->content, '\0', 255);
-            strcpy(file_to_delete->name, "\0");
+            strcpy(file_to_delete->content, "\0");
             free(file_to_delete);
             printf("ok\n");
         }
