@@ -15,6 +15,7 @@
 
 /*                !!!DA FARE!!!
  *  1-Max figli 255 e risorse nella stessa cartella 1024
+ *  2-ordine lessicografico find
  */
 
 
@@ -124,7 +125,8 @@ int main(int argc, const char * argv[]) {
         
         //Acquisizione comando-percorso-contenuto
         buffer=(char *)calloc(500, sizeof(char));
-        if(fgets(buffer, 500, stdin)==NULL)
+        //printf("sto per leggere!!\n");
+        fgets(buffer, 500, stdin);
         buffer[strlen(buffer)-1]='\0';
         //printf("ho letto!!\n");
         
