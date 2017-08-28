@@ -10,13 +10,11 @@
 
 
 /*                !!!BUG NOTI!!!
- *  1-il contenuto della write viene troncato agli spazi
- *  2-Errore nell'cquisizione di stdin lunghi
+ *  1-Errore nell'cquisizione di stdin lunghi
  */
 
 /*                !!!DA FARE!!!
  *  1-Max figli 255 e risorse nella stessa cartella 1024
- *  2-Fix contenuto write troncato agli spazi
  */
 
 
@@ -125,8 +123,8 @@ int main(int argc, const char * argv[]) {
         
         
         //Acquisizione comando-percorso-contenuto
-        buffer=(char *)calloc(20000, sizeof(char));
-        if(fgets(buffer, 20000, stdin)==NULL)
+        buffer=(char *)calloc(500, sizeof(char));
+        if(fgets(buffer, 500, stdin)==NULL)
         buffer[strlen(buffer)-1]='\0';
         //printf("ho letto!!\n");
         
@@ -135,7 +133,7 @@ int main(int argc, const char * argv[]) {
         
         
         //Split buffer
-        command=strtok(buffer," ");
+        command=strtok(buffer," \n");
         if(command!=NULL) command[strlen(command)]='\0';
         
         path=strtok(NULL," \n");
@@ -254,7 +252,7 @@ int main(int argc, const char * argv[]) {
             return 0;
         }
         
-        
+        /*
         else if(strcmp(command, "vai")==0) //DEBUG ONLY
         {
             if(check_path_format(path, command)==1)
@@ -263,7 +261,7 @@ int main(int argc, const char * argv[]) {
                 if(temp_dir!=NULL)
                     printf("\ntrovato: %s", temp_dir->name);
             }
-        }
+        }*/
         
         //ERRORE INPUT COMANDO
         else
@@ -722,7 +720,8 @@ struct file * read_file(struct directory * root, char path_local[])
     }
     else
     {
-        printf("contenuto %s\n",file_to_read->content);
+        if(strcmp(file_to_read->content,"")==0) printf("contenuto \n");
+        else printf("contenuto %s\n",file_to_read->content);
         return file_to_read;
     }
 }
