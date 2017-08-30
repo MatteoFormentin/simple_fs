@@ -82,6 +82,7 @@ int main(int argc, const char * argv[]) {
     root->left_child=NULL;
     root->file_tree=NULL;
     
+    
     /*
     //DEBUG ONLY
     create_directory(root, "/dir0rid");
@@ -125,9 +126,9 @@ int main(int argc, const char * argv[]) {
     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
    create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
 
-*/
+
     
-    
+    printf("tutte create");*/
 
     
   
@@ -406,7 +407,7 @@ struct directory * create_directory(struct directory * root, char path_local[])
     if (last_path_before_new!=0)
     {
         //Estrazione percorso dal parametro percorso
-        path_where_create_dir=malloc(last_path_before_new);
+        path_where_create_dir=calloc(last_path_before_new+1, sizeof(char));
         strncpy(path_where_create_dir,path_local,last_path_before_new);
         path_where_create_dir[last_path_before_new] = '\0';
         new_directory_path=go_to_path_directory(root, path_where_create_dir);
@@ -421,7 +422,7 @@ struct directory * create_directory(struct directory * root, char path_local[])
         }
         
         //Estrazione nome cratella dal parametro percorso
-        new_directory_name=malloc(strlen(path_local)-last_path_before_new);
+        new_directory_name=malloc(strlen(path_local)/*-last_path_before_new*/);
          for(int i=last_path_before_new; i<strlen(path_local); i++)
          {
              new_directory_name[i-last_path_before_new]=path_local[i+1];
@@ -540,7 +541,7 @@ struct file * create_file(struct directory * root, char path_local[])
     {
         
         //Estrazione percorso dal parametro percorso
-        path_where_create_file=malloc(last_path_before_new);
+        path_where_create_file=calloc(10000, sizeof(char));
         strncpy(path_where_create_file,path_local,last_path_before_new);
         path_where_create_file[last_path_before_new] = '\0';
         container_directory_path=go_to_path_directory(root, path_where_create_file);
@@ -554,7 +555,7 @@ struct file * create_file(struct directory * root, char path_local[])
         }
         
         //Estrazione nome file dal parametro percorso
-        new_file_name=malloc(strlen(path_local)-last_path_before_new);
+        new_file_name=malloc(strlen(path_local)/*-last_path_before_new*/);
         for(int i=last_path_before_new; i<strlen(path_local); i++)
         {
             new_file_name[i-last_path_before_new]=path_local[i+1];
@@ -567,7 +568,7 @@ struct file * create_file(struct directory * root, char path_local[])
     {
         //printf("\nCreazione in root\n"); //DEBUG ONLY
         container_directory_path=root;
-        new_file_name=malloc(strlen(path_local)-last_path_before_new);
+        new_file_name=malloc(strlen(path_local)/*-last_path_before_new*/);
         int i;
         for(i=0; i<strlen(path_local); i++)
         {
@@ -654,7 +655,7 @@ struct file * go_to_path_file(struct directory * current_path, char path_local[]
     if (last_path_before_new!=0)
     {
         //Estrazione percorso dal parametro percorso
-        container_directory_name=malloc(last_path_before_new);
+        container_directory_name=calloc(last_path_before_new+1, sizeof(char));
         strncpy(container_directory_name,path_local,last_path_before_new);
         container_directory_name[last_path_before_new] = '\0';
         container_directory_path=go_to_path_directory(root, container_directory_name);
@@ -667,7 +668,7 @@ struct file * go_to_path_file(struct directory * current_path, char path_local[]
         }
         
         //Estrazione nome file dal parametro percorso
-        file_name=malloc(strlen(path_local)-last_path_before_new);
+        file_name=malloc(strlen(path_local)/*-last_path_before_new*/);
         for(int i=last_path_before_new; i<strlen(path_local); i++)
         {
             file_name[i-last_path_before_new]=path_local[i+1];
@@ -836,12 +837,12 @@ void delete(struct directory * root, char path_local[], int flag)
     //Delete directory
     if(directory_to_delete!=NULL) //Necessario per escludere il ricorsivo
     {
-        if((directory_to_delete->left_child==NULL || directory_to_delete->file_tree==NULL) && flag==0 )
+        if((directory_to_delete->left_child!=NULL || directory_to_delete->file_tree!=NULL) && flag==0 )
         {
             //printf("\nfile nella cartella"); //DEBUG ONLY
             printf("no\n");
             free(path_local2);
-            free(directory_to_delete);
+            //free(directory_to_delete);
             return;
         }
         
