@@ -10,8 +10,7 @@
 
 
 /*                !!!BUG NOTI!!!
- *  1-Errore nell'cquisizione di stdin lunghi - SOLO IN XCODE, NO IN TERMINALE
- *  2-Problema nel "salvataggio" di file e cartelle. il nome viene salvato come NULL nonostante all'uscita di create_dir il salvataggio va a buon fine
+ * 
  */
 
 /*                !!!DA FARE!!!
@@ -70,7 +69,7 @@ struct file {
 char * buffer= NULL;
 char * command = NULL;
 char * path = NULL;
-char content[255];
+char * content=NULL;
 
 
 int main(int argc, const char * argv[]) {
@@ -83,11 +82,15 @@ int main(int argc, const char * argv[]) {
     root->file_tree=NULL;
     
     
-    /*
+    
     //DEBUG ONLY
+    /*
     create_directory(root, "/dir0rid");
     create_directory(root, "/dir0rid/dir0rid");
     create_directory(root, "/dir0rid/dir0rid/dir0rid");
+    create_file(root, "/dir0rid/dir0rid/dir0rid/file");
+    create_file(root, "/dir0rid/dir0rid/dir0rid/file1");
+    create_file(root, "/dir0rid/dir0rid/dir0rid/file2");
     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid");
     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
@@ -138,15 +141,14 @@ int main(int argc, const char * argv[]) {
         
         
         //Acquisizione comando-percorso-contenuto
-        buffer=calloc(500, sizeof(char));
+        buffer=calloc(5000, sizeof(char));
         //printf("sto per leggere!!\n");
-        fgets(buffer, 500, stdin);
+        fgets(buffer, 5000, stdin);
         buffer[strlen(buffer)-1]='\0';
         //printf("ho letto!!\n");
         
         
         //!!!DOPO UN PO SI BLOCCA QUI
-        
         
         //Split buffer
         command=strtok(buffer," \n");
@@ -155,7 +157,8 @@ int main(int argc, const char * argv[]) {
         path=strtok(NULL," \n");
         if(path!=NULL) path[strlen(path)]='\0';
     
-        //content=(char *)calloc(20000, sizeof(char));
+        content=(char *)calloc(500, sizeof(char));
+        memset(content, '\0', 500);
         strcpy(content, "\0");
         char * temp;
         temp=strtok(NULL," \n");
@@ -170,8 +173,8 @@ int main(int argc, const char * argv[]) {
             }
         }
                 //if(content!=NULL) content[strlen(content)-1]='\0';
-       
-       // printf("\n%s\n", path);
+        //printf("%s", temp);
+        //printf("\n%s\n", content);
         
         //Esecuzione del comando corretto
     
@@ -222,6 +225,7 @@ int main(int argc, const char * argv[]) {
                 {
                     //printf("\ncontent: %s\n", content); //DEBUG ONLY
                     write_file(root, path, content);
+                    free(content);
                 }
                 else printf("no\n");
             }
@@ -285,6 +289,7 @@ int main(int argc, const char * argv[]) {
         }
         
         free(buffer);
+        //free(content);
     }
 }
 
@@ -321,7 +326,7 @@ int check_content_format(char content_local[])
     }
     else //rimuovi gli apici
     {
-        char string_without_apices[last_element];
+        char string_without_apices[last_element+1];
         int i=1;
         while(i<last_element)
         {
@@ -329,7 +334,9 @@ int check_content_format(char content_local[])
             i++;
         }
         string_without_apices[last_element-1]='\0';
+        memset(content, '\0', 255);
         strcpy(content, string_without_apices);
+        //printf("%s\n", string_without_apices);
     }
     return 1;
 }
@@ -344,6 +351,8 @@ struct directory * go_to_path_directory(struct directory * current_path, char pa
     {
         return NULL;
     }
+    
+    struct directory * first_level=NULL;
     
     char * current_path_name=strtok(path_local,"/");
     
@@ -362,7 +371,8 @@ struct directory * go_to_path_directory(struct directory * current_path, char pa
             
             if(current_path==NULL) //Se una directory padre non c'è ritorna null
             {
-               // printf("non trovato1 "); //DEBUG ONLY
+                //printf("non trovato1 "); //DEBUG ONLY
+                prec_folder=first_level;
                 return NULL;
             }
         }
@@ -370,6 +380,7 @@ struct directory * go_to_path_directory(struct directory * current_path, char pa
         current_path_name=strtok(NULL,"/");//leggi il nome della cartella successiva nel percorso
         if(current_path_name!=NULL && current_path->left_child!=NULL)
         {
+            first_level=current_path;
             prec_folder=current_path;
             current_path=current_path->left_child;
             
@@ -381,7 +392,8 @@ struct directory * go_to_path_directory(struct directory * current_path, char pa
         }
         else if(current_path_name!=NULL && current_path->left_child==NULL)
         {
-           // printf("non trovato 2 "); //DEBUG ONLY
+            //printf("non trovato 2 "); //DEBUG ONLY
+            prec_folder=first_level->left_child;
             return NULL;
         }
         else //Se non ci sono più cartelle nel nome percorso ho trovato la cartella
@@ -389,7 +401,6 @@ struct directory * go_to_path_directory(struct directory * current_path, char pa
             break;
         }
     }
-    
     return current_path;
 }
 
@@ -422,7 +433,7 @@ struct directory * create_directory(struct directory * root, char path_local[])
         }
         
         //Estrazione nome cratella dal parametro percorso
-        new_directory_name=malloc(strlen(path_local)/*-last_path_before_new*/);
+        new_directory_name=calloc(strlen(path_local)+1, sizeof(char));
          for(int i=last_path_before_new; i<strlen(path_local); i++)
          {
              new_directory_name[i-last_path_before_new]=path_local[i+1];
@@ -436,7 +447,7 @@ struct directory * create_directory(struct directory * root, char path_local[])
     {
         //printf("\nCreazione in root\n"); //DEBUG ONLY
         new_directory_path=root;
-        new_directory_name=malloc(strlen(path_local));
+        new_directory_name=calloc(strlen(path_local)+1, sizeof(char));
         int i;
         for(i=0; i<strlen(path_local); i++)
         {
@@ -541,7 +552,7 @@ struct file * create_file(struct directory * root, char path_local[])
     {
         
         //Estrazione percorso dal parametro percorso
-        path_where_create_file=calloc(10000, sizeof(char));
+        path_where_create_file=calloc(strlen(path_local)+1, sizeof(char));
         strncpy(path_where_create_file,path_local,last_path_before_new);
         path_where_create_file[last_path_before_new] = '\0';
         container_directory_path=go_to_path_directory(root, path_where_create_file);
@@ -555,7 +566,7 @@ struct file * create_file(struct directory * root, char path_local[])
         }
         
         //Estrazione nome file dal parametro percorso
-        new_file_name=malloc(strlen(path_local)/*-last_path_before_new*/);
+        new_file_name=calloc(strlen(path_local)+1, sizeof(char));
         for(int i=last_path_before_new; i<strlen(path_local); i++)
         {
             new_file_name[i-last_path_before_new]=path_local[i+1];
@@ -568,7 +579,7 @@ struct file * create_file(struct directory * root, char path_local[])
     {
         //printf("\nCreazione in root\n"); //DEBUG ONLY
         container_directory_path=root;
-        new_file_name=malloc(strlen(path_local)/*-last_path_before_new*/);
+        new_file_name=calloc(strlen(path_local)+1,sizeof(char));
         int i;
         for(i=0; i<strlen(path_local); i++)
         {
@@ -668,7 +679,7 @@ struct file * go_to_path_file(struct directory * current_path, char path_local[]
         }
         
         //Estrazione nome file dal parametro percorso
-        file_name=malloc(strlen(path_local)/*-last_path_before_new*/);
+        file_name=calloc(strlen(path_local)+1,sizeof(char));
         for(int i=last_path_before_new; i<strlen(path_local); i++)
         {
             file_name[i-last_path_before_new]=path_local[i+1];
@@ -680,7 +691,7 @@ struct file * go_to_path_file(struct directory * current_path, char path_local[]
     else
     {
         container_directory_path=root;
-        file_name=malloc(strlen(path_local));
+        file_name=calloc(strlen(path_local)+1,sizeof(char));
         int i;
         for(i=0; i<strlen(path_local); i++)
         {
@@ -742,6 +753,11 @@ struct file * go_to_path_file(struct directory * current_path, char path_local[]
 
 struct file * write_file(struct directory * root, char path_local[], char * content_local)
 {
+    if(strlen(content_local)>255)
+    {
+        printf("no\n");
+        return NULL;
+    }
     struct file * file_to_write=go_to_path_file(root, path_local);
     //printf("\ncontent local: %s\n", content_local); //DEBUG ONLY
     if(file_to_write==NULL)
@@ -829,10 +845,9 @@ void delete(struct directory * root, char path_local[], int flag)
 {
     prec_folder=NULL;
     prec_file=NULL;
-    char * path_local2=malloc(strlen(path_local));
+    char * path_local2=calloc(strlen(path_local)+1, sizeof(char));
     strcpy(path_local2,path_local);
     struct directory * directory_to_delete=go_to_path_directory(root, path_local);
-    
     
     //Delete directory
     if(directory_to_delete!=NULL) //Necessario per escludere il ricorsivo
@@ -842,7 +857,6 @@ void delete(struct directory * root, char path_local[], int flag)
             //printf("\nfile nella cartella"); //DEBUG ONLY
             printf("no\n");
             free(path_local2);
-            //free(directory_to_delete);
             return;
         }
         
@@ -883,6 +897,7 @@ void delete(struct directory * root, char path_local[], int flag)
         return;
     }
     
+    /*
     //Delete file
     struct file * file_to_delete=go_to_path_file(root, path_local2);
     if(file_to_delete !=NULL )
@@ -920,8 +935,100 @@ void delete(struct directory * root, char path_local[], int flag)
             free(file_to_delete);
             printf("ok\n");
         }
+    }*/
+    
+    //Delete file
+    else if(prec_folder!=NULL)
+    {
+       // if(prec_folder!=root) prec_folder=prec_folder->left_child;
+        if(prec_folder->file_tree!=NULL)
+        {
+            
+            struct file * file_to_delete=prec_folder->file_tree;
+            
+            char * p=strrchr(path_local2, '/');
+            p++;
+            char file_name[255];
+            int i=0;
+            while(*p!='\0')
+            {
+                file_name[i]=*p;
+                p++;
+                i++;
+            }
+            file_name[i]='\0';
+            
+            /*
+             printf("\nprec dir: %s", prec_folder->name);
+             
+             printf("\n\nfile: %s\n", file_name);
+             */
+            int trovato=0;
+            if(strcmp(file_to_delete->name, file_name)==0) //Controllo se esiste un file con lo stesso nome come primo figlio
+            {
+                trovato=1;
+            }
+            else
+            {
+                while (file_to_delete->file_brother!=NULL)
+                {
+                    if(strcmp(file_to_delete->name, file_name)==0) //Controllo se esiste una file con lo stesso nome come altro figlio
+                    {
+                        trovato=1;
+                        break;
+                    }
+                    prec_file=file_to_delete;
+                    file_to_delete=file_to_delete->file_brother;
+                }
+                
+                if(strcmp(file_to_delete->name, file_name)==0) //Controllo se esiste una file con lo stesso nome come ultimo figlio
+                {
+                    trovato=1;
+                }
+            }
+            
+            if(trovato==1)
+            {
+                if(file_to_delete!=NULL)
+                {
+                    if(prec_folder->file_tree==file_to_delete) //Casi primo file
+                    {
+                        if(file_to_delete->file_brother==NULL)
+                        {
+                            prec_folder->file_tree=NULL;
+                        }
+                        else
+                        {
+                            prec_folder->file_tree=file_to_delete->file_brother;
+                        }
+                    }
+                    
+                    else if(prec_folder->file_tree!=file_to_delete) //Casi file intermedio
+                    {
+                        if(file_to_delete->file_brother==NULL) //Caso ultimo file
+                        {
+                            prec_file->file_brother=NULL;
+                        }
+                        
+                        else
+                        {
+                            prec_file->file_brother=file_to_delete->file_brother;
+                        }
+                    }
+                    
+                    //free(file_to_delete->name);
+                    memset(file_to_delete->content, '\0', 255);
+                    strcpy(file_to_delete->content, "\0");
+                    free(file_to_delete);
+                    free(path_local2);
+                    printf("ok\n");
+                    return;
+                }
+            }
+        }
     }
-    else printf("no\n");
+
+    printf("no\n");
     free(path_local2);
 }
 
