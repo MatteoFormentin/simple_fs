@@ -72,6 +72,7 @@ char * path = NULL;
 char content[500];
 
 
+
 int main(int argc, const char * argv[]) {
     
     //INIZIALIZZAZIONE STRUTTURE DATI
@@ -254,7 +255,7 @@ int main(int argc, const char * argv[]) {
             {
                 char percorso[10240];
                 //memset(percorso, '\0', 10240);
-                strcpy(percorso,"/");
+                strcpy(percorso,"\0");
                 if(find(root, path, percorso)==0) printf("no\n");
                 //printf("ok %s", percorso);
             }
@@ -402,6 +403,7 @@ struct directory * go_to_path_directory(struct directory * current_path, char pa
 struct directory * create_directory(struct directory * root, char path_local[])
 {
     struct directory * new_directory_path=NULL;
+    struct directory * prec=NULL;
     char new_directory_name[strlen(path_local)+1];
     
     unsigned int last_path_before_new=(unsigned int)(strrchr(path_local, '/')-path_local); //Controllo se sono in root
@@ -474,6 +476,7 @@ struct directory * create_directory(struct directory * root, char path_local[])
     //Caso 2: figlio sinistro esistente
     else
     {
+        prec=new_directory_path;
         new_directory_path=new_directory_path->left_child;
         
         if(strcmp(new_directory_path->name, new_directory_name)==0) //Controllo se esiste una directory con lo stesso nome come primo figlio
@@ -485,9 +488,9 @@ struct directory * create_directory(struct directory * root, char path_local[])
         }
         
         
-        while (new_directory_path->right_brother!=NULL) //Caso 2: esistono dei figli->scorri fino alla prima posizione libera a destra
+        while (strcmp(new_directory_path->name, new_directory_name)<=0) //Caso 2: esistono dei figli->scorri fino alla prima posizione libera a destra
         {
-            //printf("new_directory_path->name 2-2 (cartella attualmente controllata dal ciclo) %s\n", new_directory_path->name);
+
             if(strcmp(new_directory_path->name, new_directory_name)==0) //Directory con lo stesso nome come figli successivi
             {
                 //printf("directory già esistente, return\n"); //DEBUG ONLY
@@ -495,17 +498,51 @@ struct directory * create_directory(struct directory * root, char path_local[])
                 free(new_directory);
                 return NULL;
             }
-            new_directory_path=new_directory_path->right_brother;
+            
+            if(new_directory_path->right_brother!=NULL)
+            {
+                prec=new_directory_path;
+                new_directory_path=new_directory_path->right_brother;
+            }
+            else break;
         }
         
+        /*
         if(strcmp(new_directory_path->name, new_directory_name)==0) //Directory con lo stesso nome come ultimo figlio
         {
             //printf("directory già esistente, return\n"); //DEBUG ONLY
             printf("no\n");
             free(new_directory);
             return NULL;
+        }*/
+        if(prec->left_child==new_directory_path)
+        {
+            if(strcmp(new_directory_path->name, new_directory_name)>0)
+            {
+                prec->left_child=new_directory;
+                new_directory->right_brother=new_directory_path;
+            }
+            else
+            {
+                new_directory_path->right_brother=new_directory;
+            }
         }
-        new_directory_path->right_brother=new_directory;
+        else if(strcmp(new_directory_path->name, new_directory_name)>0)
+        {
+            new_directory->right_brother=new_directory_path;
+            prec->right_brother=new_directory;
+        }
+        else new_directory_path->right_brother=new_directory;
+        
+        
+        
+        /*
+        if(new_directory_path->right_brother->right_brother!=NULL)
+        {
+            new_directory->right_brother=new_directory_path->right_brother->right_brother;
+        }
+        
+        new_directory_path->right_brother=new_directory;*/
     }
     
     printf("ok\n");
@@ -741,10 +778,11 @@ struct file * read_file(struct directory * root, char path_local[])
 }
 
 
+
 int find(struct directory * current_directory, char name[], char percorso[])
 {
     int flag_trovato=0;
-    
+
     if(current_directory->left_child!=NULL)
     {
         if(current_directory!=root)
@@ -757,30 +795,35 @@ int find(struct directory * current_directory, char name[], char percorso[])
         
         for(int i=((int)strlen(percorso)-(int)strlen(current_directory->name))-1;i<(int)strlen(percorso);i++) percorso[i]='\0';
     }
-    if(current_directory->right_brother!=NULL)
-    {
-        flag_trovato=find(current_directory->right_brother, name, percorso);
-    }
-    
+
+    //Se non ci sono figli
     if(strcmp(current_directory->name, name)==0)
     {
-        
         printf("ok %s/%s\n", percorso,current_directory->name);
-        return 1;
+        flag_trovato=1;
     }
-    else if(current_directory->file_tree!=NULL)
+    
+    if(current_directory->file_tree!=NULL)
     {
         struct file * current_file=current_directory->file_tree;
-        while (current_file!=NULL) {
+        while (current_file!=NULL)
+        {
             if(strcmp(current_file->name, name)==0)
             {
-                printf("ok %s/%s/%s\n", percorso,current_directory->name,current_file->name);
-                return 1;
+                if(current_directory==root) printf("ok /%s", current_file->name);
+                else printf("ok %s/%s/%s\n", percorso,current_directory->name,current_file->name);
+                flag_trovato=1;
             }
             current_file=current_file->file_brother;
         }
         
     }
+    
+    if(current_directory->right_brother!=NULL)
+    {
+        flag_trovato=find(current_directory->right_brother, name, percorso);
+    }
+   
     
     if(flag_trovato==1)return 1;
     else return 0;
