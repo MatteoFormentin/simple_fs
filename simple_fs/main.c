@@ -10,7 +10,7 @@
 
 
 /*                !!!BUG NOTI!!!
- * 
+ *
  */
 
 /*                !!!DA FARE!!!
@@ -66,10 +66,10 @@ struct file {
 } file;
 
 //Comando, Percorso, Contenuto
-char * buffer= NULL;
+char buffer[5000];
 char * command = NULL;
 char * path = NULL;
-char * content=NULL;
+char content[500];
 
 
 int main(int argc, const char * argv[]) {
@@ -85,25 +85,25 @@ int main(int argc, const char * argv[]) {
     
     //DEBUG ONLY
     /*
-    create_directory(root, "/dir0rid");
-    create_directory(root, "/dir0rid/dir0rid");
-    create_directory(root, "/dir0rid/dir0rid/dir0rid");
-    create_file(root, "/dir0rid/dir0rid/dir0rid/file");
-    create_file(root, "/dir0rid/dir0rid/dir0rid/file1");
-    create_file(root, "/dir0rid/dir0rid/dir0rid/file2");
-    create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid");
-    create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-    create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-    create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-    create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-    create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-    create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-    create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-    create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-    create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-    create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-    create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-    create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
+     create_directory(root, "/dir0rid");
+     create_directory(root, "/dir0rid/dir0rid");
+     create_directory(root, "/dir0rid/dir0rid/dir0rid");
+     create_file(root, "/dir0rid/dir0rid/dir0rid/file");
+     create_file(root, "/dir0rid/dir0rid/dir0rid/file1");
+     create_file(root, "/dir0rid/dir0rid/dir0rid/file2");
+     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid");
+     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
+     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
+     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
+     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
+     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
+     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
+     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
+     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
+     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
+     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
+     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
+     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
      create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
      create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
      create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
@@ -116,36 +116,34 @@ int main(int argc, const char * argv[]) {
      create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
      create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
      create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-    create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-    create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-    create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-    create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-    create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-    create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-   create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-    create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-    create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-    create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-    create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-   create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-
-
+     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
+     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
+     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
+     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
+     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
+     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
+     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
+     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
+     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
+     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
+     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
+     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
+     
+     
+     
+     printf("tutte create");*/
     
-    printf("tutte create");*/
-
     
-  
+    
     while (1) {
-   
+        
         // printf("\n\n\n\ninserire comando:\n "); //DEBUG ONLY
         
         
         //Acquisizione comando-percorso-contenuto
-        buffer=calloc(5000, sizeof(char));
-        //printf("sto per leggere!!\n");
+        
         fgets(buffer, 5000, stdin);
         buffer[strlen(buffer)-1]='\0';
-        //printf("ho letto!!\n");
         
         
         //!!!DOPO UN PO SI BLOCCA QUI
@@ -156,8 +154,7 @@ int main(int argc, const char * argv[]) {
         
         path=strtok(NULL," \n");
         if(path!=NULL) path[strlen(path)]='\0';
-    
-        content=(char *)calloc(500, sizeof(char));
+        
         memset(content, '\0', 500);
         strcpy(content, "\0");
         char * temp;
@@ -172,20 +169,20 @@ int main(int argc, const char * argv[]) {
                 strcat(content, temp);
             }
         }
-                //if(content!=NULL) content[strlen(content)-1]='\0';
+        //if(content!=NULL) content[strlen(content)-1]='\0';
         //printf("%s", temp);
         //printf("\n%s\n", content);
         
         //Esecuzione del comando corretto
-    
+        
         //Controllo NULL ingresso
         if (command==NULL)
         {
             //printf("inserire un comando seguito da invio!"); //DEBUG ONLY
             continue;
         }
-   
-    
+        
+        
         //CREATE
         if(strcmp(command, "create")==0)
         {
@@ -195,7 +192,7 @@ int main(int argc, const char * argv[]) {
             }
             else printf("no\n");
         }
-    
+        
         //CREATE_DIR
         else if(strcmp(command, "create_dir")==0)
         {
@@ -205,7 +202,7 @@ int main(int argc, const char * argv[]) {
             }
             else printf("no\n");
         }
-    
+        
         //READ
         else if(strcmp(command, "read")==0)
         {
@@ -215,7 +212,7 @@ int main(int argc, const char * argv[]) {
             }
             else printf("no\n");
         }
-    
+        
         //WRITE
         else if(strcmp(command, "write")==0)
         {
@@ -225,12 +222,11 @@ int main(int argc, const char * argv[]) {
                 {
                     //printf("\ncontent: %s\n", content); //DEBUG ONLY
                     write_file(root, path, content);
-                    free(content);
                 }
                 else printf("no\n");
             }
         }
-    
+        
         //DELETE
         else if(strcmp(command, "delete")==0)
         {
@@ -240,7 +236,7 @@ int main(int argc, const char * argv[]) {
             }
             else printf("no\n");
         }
-    
+        
         //DELETE_R
         else if(strcmp(command, "delete_r")==0)
         {
@@ -272,15 +268,15 @@ int main(int argc, const char * argv[]) {
         }
         
         /*
-        else if(strcmp(command, "vai")==0) //DEBUG ONLY
-        {
-            if(check_path_format(path, command)==1)
-            {
-                struct directory * temp_dir=go_to_path_directory(root, path);
-                if(temp_dir!=NULL)
-                    printf("\ntrovato: %s", temp_dir->name);
-            }
-        }*/
+         else if(strcmp(command, "vai")==0) //DEBUG ONLY
+         {
+         if(check_path_format(path, command)==1)
+         {
+         struct directory * temp_dir=go_to_path_directory(root, path);
+         if(temp_dir!=NULL)
+         printf("\ntrovato: %s", temp_dir->name);
+         }
+         }*/
         
         //ERRORE INPUT COMANDO
         else
@@ -288,8 +284,6 @@ int main(int argc, const char * argv[]) {
             //printf("comando non valido\n"); //DEBUG ONLY
         }
         
-        free(buffer);
-        //free(content);
     }
 }
 
@@ -320,7 +314,7 @@ int check_content_format(char content_local[])
     //controlla gli apici
     if(content_local[0]!='"' || content_local==NULL || content_local[last_element]!='"')
     {
-       // printf("\nerrore nel formato del contenuto!"); //DEBUG ONLY
+        // printf("\nerrore nel formato del contenuto!"); //DEBUG ONLY
         //if(content==NULL) printf("\ncontenuto null\n"); //DEBUG ONLY
         return 0;
     }
@@ -352,7 +346,7 @@ struct directory * go_to_path_directory(struct directory * current_path, char pa
         return NULL;
     }
     
-    struct directory * first_level=NULL;
+    struct directory * first_level=current_path;
     
     char * current_path_name=strtok(path_local,"/");
     
@@ -365,9 +359,9 @@ struct directory * go_to_path_directory(struct directory * current_path, char pa
             current_path=current_path->right_brother;
             
             /*//DEBUG ONLY START
-            if(current_path!=NULL) {if(strcmp(current_path->name, "")==0 ) printf(" vuoto ");
-                else printf("%s", current_path->name);}
-            //DEBUG ONLY END*/
+             if(current_path!=NULL) {if(strcmp(current_path->name, "")==0 ) printf(" vuoto ");
+             else printf("%s", current_path->name);}
+             //DEBUG ONLY END*/
             
             if(current_path==NULL) //Se una directory padre non c'è ritorna null
             {
@@ -384,10 +378,10 @@ struct directory * go_to_path_directory(struct directory * current_path, char pa
             prec_folder=current_path;
             current_path=current_path->left_child;
             
-          /*  //DEBUG ONLY START
-            if(strcmp(current_path->name, "")==0 ) printf("vuoto ");
-            else printf("%s ", current_path->name);
-            //DEBUG ONLY END*/
+            /*  //DEBUG ONLY START
+             if(strcmp(current_path->name, "")==0 ) printf("vuoto ");
+             else printf("%s ", current_path->name);
+             //DEBUG ONLY END*/
             
         }
         else if(current_path_name!=NULL && current_path->left_child==NULL)
@@ -408,17 +402,15 @@ struct directory * go_to_path_directory(struct directory * current_path, char pa
 struct directory * create_directory(struct directory * root, char path_local[])
 {
     struct directory * new_directory_path=NULL;
-
-    char * new_directory_name=NULL;
-    char * path_where_create_dir=NULL;
+    char new_directory_name[strlen(path_local)+1];
     
     unsigned int last_path_before_new=(unsigned int)(strrchr(path_local, '/')-path_local); //Controllo se sono in root
-   
+    
     //Caso creazione non in root
     if (last_path_before_new!=0)
     {
         //Estrazione percorso dal parametro percorso
-        path_where_create_dir=calloc(last_path_before_new+1, sizeof(char));
+        char path_where_create_dir[strlen(path_local)+1];
         strncpy(path_where_create_dir,path_local,last_path_before_new);
         path_where_create_dir[last_path_before_new] = '\0';
         new_directory_path=go_to_path_directory(root, path_where_create_dir);
@@ -428,27 +420,24 @@ struct directory * create_directory(struct directory * root, char path_local[])
             //printf("\nPercorso creazione non trovato, return "); //DEBUG ONLY
             printf("no\n");
             //printf("\n"); //DEBUG ONLY
-            free(path_where_create_dir);
             return NULL; //Percorso creazione non trovato
         }
         
         //Estrazione nome cratella dal parametro percorso
-        new_directory_name=calloc(strlen(path_local)+1, sizeof(char));
-         for(int i=last_path_before_new; i<strlen(path_local); i++)
-         {
-             new_directory_name[i-last_path_before_new]=path_local[i+1];
-         }
-         new_directory_name[last_path_before_new+2]='\0';
+        for(int i=last_path_before_new; i<strlen(path_local); i++)
+        {
+            new_directory_name[i-last_path_before_new]=path_local[i+1];
+        }
+        new_directory_name[last_path_before_new+2]='\0';
     }
-   
+    
     
     //Caso creazione in root
     else
     {
         //printf("\nCreazione in root\n"); //DEBUG ONLY
         new_directory_path=root;
-        new_directory_name=calloc(strlen(path_local)+1, sizeof(char));
-        int i;
+        int i=0;
         for(i=0; i<strlen(path_local); i++)
         {
             new_directory_name[i]=path_local[i+1];
@@ -459,8 +448,6 @@ struct directory * create_directory(struct directory * root, char path_local[])
     if(strlen(new_directory_name)>255)
     {
         printf("no\n");
-        free(path_where_create_dir);
-        free(new_directory_name);
         return NULL;
     }
     
@@ -473,10 +460,10 @@ struct directory * create_directory(struct directory * root, char path_local[])
     strcpy(new_directory->name, "\0");
     strcpy(new_directory->name, new_directory_name);
     
-   /* //DEBUG ONLY
-    if (strcmp(new_directory->name,"")==0) {
-        printf(" errore nella copia del nome");
-    }*/
+    /* //DEBUG ONLY
+     if (strcmp(new_directory->name,"")==0) {
+     printf(" errore nella copia del nome");
+     }*/
     
     //Caso 1: nessun figlio sinistro esistente
     if (new_directory_path->left_child==NULL)
@@ -494,8 +481,6 @@ struct directory * create_directory(struct directory * root, char path_local[])
             //printf("directory già esistente, return\n"); //DEBUG ONLY
             printf("no\n");
             free(new_directory);
-            free(path_where_create_dir);
-            free(new_directory_name);
             return NULL;
         }
         
@@ -508,8 +493,6 @@ struct directory * create_directory(struct directory * root, char path_local[])
                 //printf("directory già esistente, return\n"); //DEBUG ONLY
                 printf("no\n");
                 free(new_directory);
-                free(path_where_create_dir);
-                free(new_directory_name);
                 return NULL;
             }
             new_directory_path=new_directory_path->right_brother;
@@ -520,30 +503,21 @@ struct directory * create_directory(struct directory * root, char path_local[])
             //printf("directory già esistente, return\n"); //DEBUG ONLY
             printf("no\n");
             free(new_directory);
-            free(path_where_create_dir);
-            free(new_directory_name);
             return NULL;
         }
         new_directory_path->right_brother=new_directory;
     }
     
-    free(path_where_create_dir);
-    free(new_directory_name);
-    //new_directory=go_to_path_directory(root, path);
-    //printf("\ncontent name: %s name: %s ",new_directory_path->name, new_directory->name); //DEBUG ONLY
-    
     printf("ok\n");
-    //printf("\n"); //DEBUG ONLY
     return new_directory;
 }
 
 struct file * create_file(struct directory * root, char path_local[])
 {
-    char * new_file_name=NULL;
-    char * path_where_create_file=NULL;
+    char new_file_name[1000];
     
     struct directory * container_directory_path=NULL;
-
+    
     
     unsigned int last_path_before_new=(unsigned int)(strrchr(path_local, '/')-path_local); //Controllo se sono in root
     
@@ -552,7 +526,7 @@ struct file * create_file(struct directory * root, char path_local[])
     {
         
         //Estrazione percorso dal parametro percorso
-        path_where_create_file=calloc(strlen(path_local)+1, sizeof(char));
+        char path_where_create_file[strlen(path_local)+1];
         strncpy(path_where_create_file,path_local,last_path_before_new);
         path_where_create_file[last_path_before_new] = '\0';
         container_directory_path=go_to_path_directory(root, path_where_create_file);
@@ -561,12 +535,10 @@ struct file * create_file(struct directory * root, char path_local[])
         {
             //printf("\nPercorso creazione non trovato, return\n"); //DEBUG ONLY
             printf("no\n");
-            free(path_where_create_file);
             return NULL; //Percorso creazione non trovato
         }
         
         //Estrazione nome file dal parametro percorso
-        new_file_name=calloc(strlen(path_local)+1, sizeof(char));
         for(int i=last_path_before_new; i<strlen(path_local); i++)
         {
             new_file_name[i-last_path_before_new]=path_local[i+1];
@@ -579,7 +551,6 @@ struct file * create_file(struct directory * root, char path_local[])
     {
         //printf("\nCreazione in root\n"); //DEBUG ONLY
         container_directory_path=root;
-        new_file_name=calloc(strlen(path_local)+1,sizeof(char));
         int i;
         for(i=0; i<strlen(path_local); i++)
         {
@@ -592,8 +563,6 @@ struct file * create_file(struct directory * root, char path_local[])
     if(strlen(new_file_name)>255)
     {
         printf("no\n");
-        free(new_file_name);
-        free(path_where_create_file);
         return NULL;
     }
     
@@ -615,8 +584,6 @@ struct file * create_file(struct directory * root, char path_local[])
         {
             //printf("directory già esistente, return\n"); //DEBUG ONLY
             printf("no\n");
-            free(new_file_name);
-            free(path_where_create_file);
             free(new_file);
             return NULL;
         }
@@ -626,8 +593,6 @@ struct file * create_file(struct directory * root, char path_local[])
             {
                 //printf("directory già esistente, return\n"); //DEBUG ONLY
                 printf("no\n");
-                free(new_file_name);
-                free(path_where_create_file);
                 free(new_file);
                 return NULL;
             }
@@ -638,26 +603,20 @@ struct file * create_file(struct directory * root, char path_local[])
         {
             //printf("directory già esistente, return\n"); //DEBUG ONLY
             printf("no\n");
-            free(new_file_name);
-            free(path_where_create_file);
             free(new_file);
             return NULL;
         }
-
+        
         file_prec->file_brother=new_file;
     }
     printf("ok\n");
-    free(new_file_name);
-    free(path_where_create_file);
     return new_file;
 }
 
 
 struct file * go_to_path_file(struct directory * current_path, char path_local[])
 {
-    char * file_name=NULL;
-    char * container_directory_name=NULL;
-    
+    char file_name[strlen(path_local)+1];
     struct directory * container_directory_path=NULL;
     
     unsigned int last_path_before_new=(unsigned int)(strrchr(path_local, '/')-path_local); //Controllo se sono in root
@@ -666,7 +625,7 @@ struct file * go_to_path_file(struct directory * current_path, char path_local[]
     if (last_path_before_new!=0)
     {
         //Estrazione percorso dal parametro percorso
-        container_directory_name=calloc(last_path_before_new+1, sizeof(char));
+        char container_directory_name[strlen(path_local)+1];
         strncpy(container_directory_name,path_local,last_path_before_new);
         container_directory_name[last_path_before_new] = '\0';
         container_directory_path=go_to_path_directory(root, container_directory_name);
@@ -674,12 +633,10 @@ struct file * go_to_path_file(struct directory * current_path, char path_local[]
         if(container_directory_path==NULL)
         {
             //printf("\nPercorso cartella container non trovato, return\n");
-            free(container_directory_name);
             return NULL; //Percorso creazione non trovato
         }
         
         //Estrazione nome file dal parametro percorso
-        file_name=calloc(strlen(path_local)+1,sizeof(char));
         for(int i=last_path_before_new; i<strlen(path_local); i++)
         {
             file_name[i-last_path_before_new]=path_local[i+1];
@@ -691,7 +648,6 @@ struct file * go_to_path_file(struct directory * current_path, char path_local[]
     else
     {
         container_directory_path=root;
-        file_name=calloc(strlen(path_local)+1,sizeof(char));
         int i;
         for(i=0; i<strlen(path_local); i++)
         {
@@ -707,16 +663,12 @@ struct file * go_to_path_file(struct directory * current_path, char path_local[]
     if(current_file==NULL)
     {
         //printf("\nNessun file nella cartella\n"); //DEBUG ONLY
-        free(file_name);
-        free(container_directory_name);
         return NULL; //Percorso creazione non trovato
     }
     
     if(strcmp(current_file->name, file_name)==0) //Controllo se esiste un file con lo stesso nome come primo figlio
     {
         //printf("file trovato\n"); //DEBUG ONLY
-        free(file_name);
-        free(container_directory_name);
         prec_folder=container_directory_path;
         return current_file;
     }
@@ -725,8 +677,6 @@ struct file * go_to_path_file(struct directory * current_path, char path_local[]
         if(strcmp(current_file->name, file_name)==0) //Controllo se esiste una file con lo stesso nome come altro figlio
         {
             //printf("file trovato\n"); //DEBUG ONLY
-            free(file_name);
-            free(container_directory_name);
             prec_folder=container_directory_path;
             return current_file;
         }
@@ -737,17 +687,13 @@ struct file * go_to_path_file(struct directory * current_path, char path_local[]
     if(strcmp(current_file->name, file_name)==0) //Controllo se esiste una file con lo stesso nome come ultimo figlio
     {
         //printf("file trovato\n"); //DEBUG ONLY
-        free(file_name);
-        free(container_directory_name);
         prec_folder=container_directory_path;
         return current_file;
     }
     
     //printf("file NON trovato\n"); //DEBUG ONLY
-    free(file_name);
-    free(container_directory_name);
     return NULL;
-
+    
 }
 
 
@@ -798,7 +744,7 @@ struct file * read_file(struct directory * root, char path_local[])
 int find(struct directory * current_directory, char name[], char percorso[])
 {
     int flag_trovato=0;
-   
+    
     if(current_directory->left_child!=NULL)
     {
         if(current_directory!=root)
@@ -818,7 +764,7 @@ int find(struct directory * current_directory, char name[], char percorso[])
     
     if(strcmp(current_directory->name, name)==0)
     {
-
+        
         printf("ok %s/%s\n", percorso,current_directory->name);
         return 1;
     }
@@ -845,7 +791,7 @@ void delete(struct directory * root, char path_local[], int flag)
 {
     prec_folder=NULL;
     prec_file=NULL;
-    char * path_local2=calloc(strlen(path_local)+1, sizeof(char));
+    char path_local2[strlen(path_local)+1];
     strcpy(path_local2,path_local);
     struct directory * directory_to_delete=go_to_path_directory(root, path_local);
     
@@ -856,7 +802,6 @@ void delete(struct directory * root, char path_local[], int flag)
         {
             //printf("\nfile nella cartella"); //DEBUG ONLY
             printf("no\n");
-            free(path_local2);
             return;
         }
         
@@ -878,7 +823,7 @@ void delete(struct directory * root, char path_local[], int flag)
             {
                 prec_folder->left_child=NULL;
             }
-        
+            
             else
             {
                 prec_folder->left_child=directory_to_delete->right_brother;
@@ -892,55 +837,54 @@ void delete(struct directory * root, char path_local[], int flag)
         }
         
         free(directory_to_delete);
-        free(path_local2);
         printf("ok\n");
         return;
     }
     
     /*
-    //Delete file
-    struct file * file_to_delete=go_to_path_file(root, path_local2);
-    if(file_to_delete !=NULL )
-    {
-        if(file_to_delete!=NULL)
-        {
-            if(prec_folder->file_tree==file_to_delete) //Casi file fratelli
-            {
-                if(file_to_delete->file_brother==NULL)
-                {
-                    prec_folder->file_tree=NULL;
-                }
-                else
-                {
-                    prec_folder->file_tree=file_to_delete->file_brother;
-                }
-            }
-            
-            else if(prec_folder->file_tree!=file_to_delete) //Casi directory figlie
-            {
-                if(file_to_delete->file_brother==NULL)
-                {
-                    prec_file->file_brother=NULL;
-                }
-                
-                else
-                {
-                    prec_file->file_brother=file_to_delete->file_brother;
-                }
-            }
-            
-            //free(file_to_delete->name);
-            //memset(file_to_delete->content, '\0', 255);
-            strcpy(file_to_delete->content, "\0");
-            free(file_to_delete);
-            printf("ok\n");
-        }
-    }*/
+     //Delete file
+     struct file * file_to_delete=go_to_path_file(root, path_local2);
+     if(file_to_delete !=NULL )
+     {
+     if(file_to_delete!=NULL)
+     {
+     if(prec_folder->file_tree==file_to_delete) //Casi file fratelli
+     {
+     if(file_to_delete->file_brother==NULL)
+     {
+     prec_folder->file_tree=NULL;
+     }
+     else
+     {
+     prec_folder->file_tree=file_to_delete->file_brother;
+     }
+     }
+     
+     else if(prec_folder->file_tree!=file_to_delete) //Casi directory figlie
+     {
+     if(file_to_delete->file_brother==NULL)
+     {
+     prec_file->file_brother=NULL;
+     }
+     
+     else
+     {
+     prec_file->file_brother=file_to_delete->file_brother;
+     }
+     }
+     
+     //free(file_to_delete->name);
+     //memset(file_to_delete->content, '\0', 255);
+     strcpy(file_to_delete->content, "\0");
+     free(file_to_delete);
+     printf("ok\n");
+     }
+     }*/
     
     //Delete file
     else if(prec_folder!=NULL)
     {
-       // if(prec_folder!=root) prec_folder=prec_folder->left_child;
+        // if(prec_folder!=root) prec_folder=prec_folder->left_child;
         if(prec_folder->file_tree!=NULL)
         {
             
@@ -1020,16 +964,14 @@ void delete(struct directory * root, char path_local[], int flag)
                     memset(file_to_delete->content, '\0', 255);
                     strcpy(file_to_delete->content, "\0");
                     free(file_to_delete);
-                    free(path_local2);
                     printf("ok\n");
                     return;
                 }
             }
         }
     }
-
+    
     printf("no\n");
-    free(path_local2);
 }
 
 
@@ -1044,7 +986,7 @@ void delete_child(struct directory * directory)
         delete_child(directory->right_brother);
     }
     
-
+    
     if(directory->file_tree!=NULL)
     {
         struct file * file=directory->file_tree;
@@ -1059,6 +1001,6 @@ void delete_child(struct directory * directory)
     }
     
     free(directory);
-
+    
 }
 
