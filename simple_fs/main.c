@@ -37,7 +37,7 @@ struct file * create_file(struct directory * root, char path_local[]);
 struct file * write_file(struct directory * root, char path_local[], char * content_local);
 struct file * read_file(struct directory * root, char path_local[]);
 
-int find(struct directory * current, char name[],char percorso[]);
+int find(struct directory * current, char name[], char percorso[][1024], char temp_percorso[]);
 void delete(struct directory * root, char path_local[], int flag);
 void delete_child(struct directory * directory);
 
@@ -71,7 +71,11 @@ char * command = NULL;
 char * path = NULL;
 char content[500];
 
-
+int k;
+int comp(const void * a, const void * b)
+{
+    return strcmp((char*)a, (char*)b);
+}
 
 int main(int argc, const char * argv[]) {
     
@@ -253,11 +257,18 @@ int main(int argc, const char * argv[]) {
         {
             if(check_path_format(path, command)==1)
             {
-                char percorso[10240];
-                //memset(percorso, '\0', 10240);
-                strcpy(percorso,"\0");
-                if(find(root, path, percorso)==0) printf("no\n");
-                //printf("ok %s", percorso);
+                char percorso[1024][1024];
+                char temp_percorso[1024];
+                k=0;
+                if(find(root, path, percorso, temp_percorso)==0) printf("no\n");
+                else
+                {
+                    qsort(percorso, k, sizeof(percorso[0]), comp);
+                    for(int i=0; i<k; i++)
+                    {
+                        printf("ok %s\n",percorso[i]);
+                    }
+                }
             }
             else printf("no\n");
         }
@@ -779,7 +790,7 @@ struct file * read_file(struct directory * root, char path_local[])
 
 
 
-int find(struct directory * current_directory, char name[], char percorso[])
+int find(struct directory * current_directory, char name[], char percorso[][1024], char temp_percorso[])
 {
     int flag_trovato=0;
 
@@ -787,19 +798,21 @@ int find(struct directory * current_directory, char name[], char percorso[])
     {
         if(current_directory!=root)
         {
-            if(strcmp(percorso, "/")!=0) strcat(percorso,"/");
-            strcat(percorso, current_directory->name);
+            if(strcmp(temp_percorso, "/")!=0) strcat(temp_percorso,"/");
+            strcat(temp_percorso, current_directory->name);
+            
         }
         
-        flag_trovato=find(current_directory->left_child, name, percorso);
+        flag_trovato=find(current_directory->left_child, name, percorso,temp_percorso);
         
-        for(int i=((int)strlen(percorso)-(int)strlen(current_directory->name))-1;i<(int)strlen(percorso);i++) percorso[i]='\0';
+        for(int i=((int)strlen(temp_percorso)-(int)strlen(current_directory->name))-1;i<(int)strlen(temp_percorso);i++) temp_percorso[i]='\0';
     }
 
     //Se non ci sono figli
     if(strcmp(current_directory->name, name)==0)
     {
-        printf("ok %s/%s\n", percorso,current_directory->name);
+        sprintf(percorso[k],"%s/%s", temp_percorso,current_directory->name);
+        k++;
         flag_trovato=1;
     }
     
@@ -810,9 +823,10 @@ int find(struct directory * current_directory, char name[], char percorso[])
         {
             if(strcmp(current_file->name, name)==0)
             {
-                if(current_directory==root) printf("ok /%s", current_file->name);
-                else printf("ok %s/%s/%s\n", percorso,current_directory->name,current_file->name);
+                if(current_directory==root) sprintf(percorso[k],"/%s", current_file->name);
+                else sprintf(percorso[k],"%s/%s/%s", temp_percorso,current_directory->name,current_file->name);
                 flag_trovato=1;
+                k++;
             }
             current_file=current_file->file_brother;
         }
@@ -821,7 +835,7 @@ int find(struct directory * current_directory, char name[], char percorso[])
     
     if(current_directory->right_brother!=NULL)
     {
-        flag_trovato=find(current_directory->right_brother, name, percorso);
+        flag_trovato=find(current_directory->right_brother, name, percorso, temp_percorso);
     }
    
     
