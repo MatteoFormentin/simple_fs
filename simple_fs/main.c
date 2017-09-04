@@ -24,6 +24,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+
+#define MAX_ALTEZZA 255
+#define MAX_AMPIEZZA 1024
+#define BUFFER_DIM 10000
+#define CONTENT_DIM 1000
+#define PERCORSO_N 700 //Lunghezza massima stringa
+#define PERCORSO_SIZE 700 //N massimo stringhe
+
 //Prototipi
 int check_path_format(char * path, char command[]);
 int check_content_format(char content[]);
@@ -37,7 +45,7 @@ struct file * create_file(struct directory * root, char path_local[]);
 struct file * write_file(struct directory * root, char path_local[], char * content_local);
 struct file * read_file(struct directory * root, char path_local[]);
 
-int find(struct directory * current, char name[], char percorso[][1024], char temp_percorso[]);
+int find(struct directory * current, char name[], char percorso[][PERCORSO_SIZE], char temp_percorso[]);
 void delete(struct directory * root, char path_local[], int flag);
 void delete_child(struct directory * directory);
 
@@ -50,10 +58,14 @@ struct directory {
     struct directory * left_child;
     struct directory * right_brother;
     struct file * file_tree;
+    int n_file;
+    int n_dir;
 } directory;
 
 struct directory * root;
 struct directory * prec_folder;
+struct directory * father_folder;
+int altezza=0;
 
 struct file * prec_file;
 
@@ -66,10 +78,10 @@ struct file {
 } file;
 
 //Comando, Percorso, Contenuto
-char buffer[5000];
+char buffer[BUFFER_DIM];
 char * command = NULL;
 char * path = NULL;
-char content[1000];
+char content[CONTENT_DIM];
 
 int k;
 int comp(const void * a, const void * b)
@@ -85,20 +97,23 @@ int main(int argc, const char * argv[]) {
     root->right_brother=NULL;
     root->left_child=NULL;
     root->file_tree=NULL;
+    root->n_dir=0;
+    root->n_file=0;
     
     
-    /*
     //DEBUG ONLY
-    
+    /*
      create_directory(root, "/dir0rid");
      create_directory(root, "/dir0rid/dir0rid");
      create_directory(root, "/dir0rid/dir0rid/dir0rid");
-     create_file(root, "/dir0rid/dir0rid/dir0rid/file");
-     create_file(root, "/dir0rid/dir0rid/dir0rid/file1");
-     create_file(root, "/dir0rid/dir0rid/dir0rid/file2");
      create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid");
      create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
      create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
+    
+     create_file(root, "/dir0rid/dir0rid/dir0rid/file");
+     create_file(root, "/dir0rid/dir0rid/dir0rid/file1");
+     create_file(root, "/dir0rid/dir0rid/dir0rid/file2");
+    
      create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
      create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
      create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
@@ -190,7 +205,7 @@ int main(int argc, const char * argv[]) {
         
         //Acquisizione comando-percorso-contenuto
         
-        fgets(buffer, 10000, stdin);
+        fgets(buffer, BUFFER_DIM, stdin);
         buffer[strlen(buffer)-1]='\0';
         
         
@@ -203,7 +218,7 @@ int main(int argc, const char * argv[]) {
         path=strtok(NULL," \n");
         if(path!=NULL) path[strlen(path)]='\0';
         
-        memset(content, '\0', 1000);
+        memset(content, '\0', CONTENT_DIM);
         strcpy(content, "\0");
         char * temp;
         temp=strtok(NULL," \n");
@@ -266,9 +281,8 @@ int main(int argc, const char * argv[]) {
         {
             if(check_path_format(path, command)==1)
             {
-                if(check_content_format(content)!=0 && strlen(path)<=255)
+                if(check_content_format(content)!=0)
                 {
-                    //printf("\ncontent: %s\n", content); //DEBUG ONLY
                     write_file(root, path, content);
                 }
                 else printf("no\n");
@@ -300,12 +314,12 @@ int main(int argc, const char * argv[]) {
         {
             if(check_path_format(path, command)==1)
             {
-                char percorso[1024][1024];
-                char temp_percorso[1024];
-                for(int i=0; i<1024; i++)
+                char percorso[PERCORSO_N][PERCORSO_SIZE];
+                char temp_percorso[PERCORSO_SIZE];
+               /* for(int i=0; i<PERCORSO_N; i++)
                 {
                     strcpy(percorso[i], "\0");
-                }
+                }*/
                 k=0;
                 if(find(root, path, percorso, temp_percorso)==0) printf("no\n");
                 else
@@ -398,10 +412,10 @@ int check_content_format(char content_local[])
 
 struct directory * go_to_path_directory(struct directory * current_path, char path_local[])
 {
+    
     prec_folder=current_path;
     current_path=current_path->left_child;
-    int altezza=0;
-    int ampiezza=0;
+    altezza=1;
     if(current_path==NULL) //Albero vuoto
     {
         return NULL;
@@ -418,17 +432,6 @@ struct directory * go_to_path_directory(struct directory * current_path, char pa
             //directory non esistente o nome di un file
             prec_folder=current_path;
             current_path=current_path->right_brother;
-            ampiezza++;
-            if(altezza>1024)
-            {
-                printf("no\n");
-                return NULL;
-            }
-            /*//DEBUG ONLY START
-             if(current_path!=NULL) {if(strcmp(current_path->name, "")==0 ) printf(" vuoto ");
-             else printf("%s", current_path->name);}
-             //DEBUG ONLY END*/
-            
             if(current_path==NULL) //Se una directory padre non c'è ritorna null
             {
                 //printf("non trovato1 "); //DEBUG ONLY
@@ -444,18 +447,6 @@ struct directory * go_to_path_directory(struct directory * current_path, char pa
             prec_folder=current_path;
             current_path=current_path->left_child;
             altezza++;
-            ampiezza=0;
-            if(altezza>255)
-            {
-                printf("no\n");
-                return NULL;
-            }
-            
-            /*  //DEBUG ONLY START
-             if(strcmp(current_path->name, "")==0 ) printf("vuoto ");
-             else printf("%s ", current_path->name);
-             //DEBUG ONLY END*/
-            
         }
         else if(current_path_name!=NULL && current_path->left_child==NULL)
         {
@@ -468,6 +459,8 @@ struct directory * go_to_path_directory(struct directory * current_path, char pa
             break;
         }
     }
+    //printf("altezza: %d", altezza);
+    father_folder=first_level;
     return current_path;
 }
 
@@ -475,6 +468,7 @@ struct directory * go_to_path_directory(struct directory * current_path, char pa
 struct directory * create_directory(struct directory * root, char path_local[])
 {
     struct directory * new_directory_path=NULL;
+    struct directory * new_directory_father=NULL;
     struct directory * prec=NULL;
     char new_directory_name[strlen(path_local)+1];
     
@@ -488,6 +482,13 @@ struct directory * create_directory(struct directory * root, char path_local[])
         strncpy(path_where_create_dir,path_local,last_path_before_new);
         path_where_create_dir[last_path_before_new] = '\0';
         new_directory_path=go_to_path_directory(root, path_where_create_dir);
+        new_directory_father=new_directory_path;
+
+        if(altezza+1>MAX_ALTEZZA)
+        {
+            printf("no\n");
+            return NULL; //Troppe directory nell'albero
+        }
         
         if(new_directory_path==NULL)
         {
@@ -511,6 +512,7 @@ struct directory * create_directory(struct directory * root, char path_local[])
     {
         //printf("\nCreazione in root\n"); //DEBUG ONLY
         new_directory_path=root;
+        new_directory_father=new_directory_path;
         int i=0;
         for(i=0; i<strlen(path_local); i++)
         {
@@ -525,12 +527,20 @@ struct directory * create_directory(struct directory * root, char path_local[])
         return NULL;
     }
     
+    if((new_directory_father->n_dir+new_directory_father->n_file)+1>MAX_AMPIEZZA)
+    {
+        printf("no\n"); //Troppe risorse nella stessa cartella
+        return NULL;
+    }
+    
     
     //Creazione in memoria della cartella (non ancora nell'albero)
     struct directory * new_directory=malloc(sizeof(struct directory));
     new_directory->left_child=NULL;
     new_directory->right_brother=NULL;
     new_directory->file_tree=NULL;
+    new_directory->n_dir=0;
+    new_directory->n_file=0;
     strcpy(new_directory->name, "\0");
     strcpy(new_directory->name, new_directory_name);
     
@@ -618,6 +628,7 @@ struct directory * create_directory(struct directory * root, char path_local[])
     }
     
     printf("ok\n");
+    new_directory_father->n_dir++;
     return new_directory;
 }
 
@@ -626,7 +637,6 @@ struct file * create_file(struct directory * root, char path_local[])
     char new_file_name[1000];
     
     struct directory * container_directory_path=NULL;
-    
     
     unsigned int last_path_before_new=(unsigned int)(strrchr(path_local, '/')-path_local); //Controllo se sono in root
     
@@ -675,6 +685,12 @@ struct file * create_file(struct directory * root, char path_local[])
         return NULL;
     }
     
+    if((container_directory_path->n_dir+container_directory_path->n_file)+1>MAX_AMPIEZZA)
+    {
+        printf("no\n"); //Troppe risorse nella stessa cartella
+        return NULL;
+    }
+
     
     struct file * new_file=malloc(sizeof(struct file));
     strcpy(new_file->name, new_file_name);
@@ -687,6 +703,7 @@ struct file * create_file(struct directory * root, char path_local[])
     }
     else
     {
+        //ampiezza++;
         struct file * file_prec=container_directory_path->file_tree;
         
         if(strcmp(new_file->name, file_prec->name)==0) //Controllo se esiste un file con lo stesso nome come primo figlio
@@ -697,6 +714,7 @@ struct file * create_file(struct directory * root, char path_local[])
             return NULL;
         }
         
+        
         while (file_prec->file_brother!=NULL) {
             if(strcmp(new_file->name, file_prec->name)==0) //Controllo se esiste un file con lo stesso nome come altro figlio
             {
@@ -706,6 +724,14 @@ struct file * create_file(struct directory * root, char path_local[])
                 return NULL;
             }
             file_prec=file_prec->file_brother;
+         /*   ampiezza++;
+            printf("\nampiezza dir+file: %d\n", ampiezza);
+            
+            if(ampiezza>MAX_AMPIEZZA-1)
+            {
+                printf("no\n");
+                return NULL;
+            }*/
         }
         
         if(strcmp(new_file->name, file_prec->name)==0) //Controllo se esiste un file con lo stesso nome come ultimo figlio
@@ -718,6 +744,7 @@ struct file * create_file(struct directory * root, char path_local[])
         
         file_prec->file_brother=new_file;
     }
+    container_directory_path->n_file++;
     printf("ok\n");
     return new_file;
 }
@@ -851,7 +878,7 @@ struct file * read_file(struct directory * root, char path_local[])
 
 
 
-int find(struct directory * current_directory, char name[], char percorso[][1024], char temp_percorso[])
+int find(struct directory * current_directory, char name[], char percorso[][PERCORSO_SIZE], char temp_percorso[])
 {
     int flag_trovato=0;
 
@@ -958,49 +985,10 @@ void delete(struct directory * root, char path_local[], int flag)
         }
         
         free(directory_to_delete);
+        father_folder->n_dir--;
         printf("ok\n");
         return;
     }
-    
-    /*
-     //Delete file
-     struct file * file_to_delete=go_to_path_file(root, path_local2);
-     if(file_to_delete !=NULL )
-     {
-     if(file_to_delete!=NULL)
-     {
-     if(prec_folder->file_tree==file_to_delete) //Casi file fratelli
-     {
-     if(file_to_delete->file_brother==NULL)
-     {
-     prec_folder->file_tree=NULL;
-     }
-     else
-     {
-     prec_folder->file_tree=file_to_delete->file_brother;
-     }
-     }
-     
-     else if(prec_folder->file_tree!=file_to_delete) //Casi directory figlie
-     {
-     if(file_to_delete->file_brother==NULL)
-     {
-     prec_file->file_brother=NULL;
-     }
-     
-     else
-     {
-     prec_file->file_brother=file_to_delete->file_brother;
-     }
-     }
-     
-     //free(file_to_delete->name);
-     //memset(file_to_delete->content, '\0', 255);
-     strcpy(file_to_delete->content, "\0");
-     free(file_to_delete);
-     printf("ok\n");
-     }
-     }*/
     
     //Delete file
     else if(prec_folder!=NULL)
@@ -1085,6 +1073,7 @@ void delete(struct directory * root, char path_local[], int flag)
                     memset(file_to_delete->content, '\0', 255);
                     strcpy(file_to_delete->content, "\0");
                     free(file_to_delete);
+                    prec_folder->n_file--;
                     printf("ok\n");
                     return;
                 }
