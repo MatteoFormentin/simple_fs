@@ -27,9 +27,9 @@
 
 #define MAX_ALTEZZA 255
 #define MAX_AMPIEZZA 1024
-#define BUFFER_DIM 10000
+#define BUFFER_DIM 80000
 #define CONTENT_DIM 1000
-#define PERCORSO_N 500 //N massimo stringhe
+#define PERCORSO_N 400 //N massimo stringhe
 #define PERCORSO_SIZE 10000 //Lunghezza massima stringa
 
 //Prototipi
@@ -54,7 +54,7 @@ void delete_child(struct directory * directory);
 //Directory
 
 struct directory {
-    char name[255];
+    char * name;
     struct directory * left_child;
     struct directory * right_brother;
     struct file * file_tree;
@@ -72,8 +72,8 @@ struct file * prec_file;
 //File
 
 struct file {
-    char name[255];
-    char content[255];
+    char * name;
+    char * content;
     struct file * file_brother;
 } file;
 
@@ -93,6 +93,7 @@ int main(int argc, const char * argv[]) {
     
     //INIZIALIZZAZIONE STRUTTURE DATI
     root=(struct directory *)malloc(sizeof(directory));
+    root->name=malloc((strlen("root")+1)*sizeof(char));
     strcpy(root->name,"root");
     root->right_brother=NULL;
     root->left_child=NULL;
@@ -541,7 +542,7 @@ struct directory * create_directory(struct directory * root, char path_local[])
     new_directory->file_tree=NULL;
     new_directory->n_dir=0;
     new_directory->n_file=0;
-    strcpy(new_directory->name, "\0");
+    new_directory->name=malloc((strlen(new_directory_name)+1)*sizeof(char));
     strcpy(new_directory->name, new_directory_name);
     
     /* //DEBUG ONLY
@@ -693,8 +694,10 @@ struct file * create_file(struct directory * root, char path_local[])
 
     
     struct file * new_file=malloc(sizeof(struct file));
+    new_file->name=malloc(strlen((new_file_name)+1)*sizeof(char));
     strcpy(new_file->name, new_file_name);
     new_file->file_brother=NULL;
+    new_file->content=NULL;
     
     //Caso 1: nessun figlio esistente
     if (container_directory_path->file_tree==NULL)
@@ -850,6 +853,7 @@ struct file * write_file(struct directory * root, char path_local[], char * cont
     }
     else
     {
+        file_to_write->content=malloc((strlen(content_local)+1)*sizeof(char));
         strcpy(file_to_write->content, "\0");
         strcpy(file_to_write->content, content_local);
         printf("ok %d\n", (int)strlen(content_local));
@@ -870,7 +874,7 @@ struct file * read_file(struct directory * root, char path_local[])
     }
     else
     {
-        if(strcmp(file_to_read->content,"")==0) printf("contenuto \n");
+        if(file_to_read->content==NULL) printf("contenuto \n");
         else printf("contenuto %s\n", file_to_read->content);
         return file_to_read;
     }
@@ -984,6 +988,7 @@ void delete(struct directory * root, char path_local[], int flag)
             delete_child(directory_to_delete->left_child);
         }
         
+        free(directory_to_delete->name);
         free(directory_to_delete);
         father_folder->n_dir--;
         printf("ok\n");
@@ -1069,10 +1074,13 @@ void delete(struct directory * root, char path_local[], int flag)
                         }
                     }
                     
-                    //free(file_to_delete->name);
-                    memset(file_to_delete->content, '\0', 255);
-                    strcpy(file_to_delete->content, "\0");
+        
+                    //memset(file_to_delete->content, '\0', 255);
+                    //strcpy(file_to_delete->content, "\0");
+                    free(file_to_delete->name);
+                    free(file_to_delete->content);
                     free(file_to_delete);
+                    
                     prec_folder->n_file--;
                     printf("ok\n");
                     return;
@@ -1106,10 +1114,13 @@ void delete_child(struct directory * directory)
         {
             prec=file;
             file=file->file_brother;
+            free(prec->name);
+            free(prec->content);
             free(prec);
         }
     }
     
+    free(directory->name);
     free(directory);
     
 }
