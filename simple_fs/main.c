@@ -29,8 +29,8 @@
 #define MAX_AMPIEZZA 1024
 #define BUFFER_DIM 10000
 #define CONTENT_DIM 1000
-#define PERCORSO_N 700 //N massimo stringhe
-#define PERCORSO_SIZE 30000 //Lunghezza massima stringa
+#define PERCORSO_N 500 //N massimo stringhe
+#define PERCORSO_SIZE 10000 //Lunghezza massima stringa
 
 //Prototipi
 int check_path_format(char * path, char command[]);

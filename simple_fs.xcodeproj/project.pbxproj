@@ -333,6 +333,7 @@
 				9542A48C1F091F1D008B5241 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
