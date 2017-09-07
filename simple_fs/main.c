@@ -29,8 +29,7 @@
 #define MAX_AMPIEZZA 1024
 #define BUFFER_DIM 80000
 #define CONTENT_DIM 1000
-#define PERCORSO_N 400 //N massimo stringhe
-#define PERCORSO_SIZE 10000 //Lunghezza massima stringa
+#define PERCORSO_SIZE 80000 //Lunghezza massima stringa
 
 //Prototipi
 int check_path_format(char * path, char command[]);
@@ -45,7 +44,7 @@ struct file * create_file(struct directory * root, char path_local[]);
 struct file * write_file(struct directory * root, char path_local[], char * content_local);
 struct file * read_file(struct directory * root, char path_local[]);
 
-int find(struct directory * current, char name[], char percorso[][PERCORSO_SIZE], char temp_percorso[]);
+int find(struct directory * current_directory, char name[], char temp_percorso[]);
 void delete(struct directory * root, char path_local[], int flag);
 void delete_child(struct directory * directory);
 
@@ -82,14 +81,6 @@ char buffer[BUFFER_DIM];
 char * command = NULL;
 char * path = NULL;
 char content[CONTENT_DIM];
-
-int k;
-int comp(const void * a, const void * b)
-{
-    return strcmp((char*)a, (char*)b);
-}
-
-
 
 int main(int argc, const char * argv[]) {
     
@@ -317,22 +308,11 @@ int main(int argc, const char * argv[]) {
         {
             if(check_path_format(path, command)==1)
             {
-                char percorso[PERCORSO_N][PERCORSO_SIZE];
+                
+                //char percorso[PERCORSO_N][PERCORSO_SIZE];
                 char temp_percorso[PERCORSO_SIZE];
-                /* for(int i=0; i<PERCORSO_N; i++)
-                 {
-                 strcpy(percorso[i], "\0");
-                 }*/
-                k=0;
-                if(find(root, path, percorso, temp_percorso)==0) printf("no\n");
-                else
-                {
-                    qsort(percorso, k, sizeof(percorso[0]), comp);
-                    for(int i=0; i<k; i++)
-                    {
-                        printf("ok %s\n",percorso[i]);
-                    }
-                }
+                strcpy(temp_percorso, "\0");
+                if(find(root, path, temp_percorso)==0) printf("no\n");
             }
             else printf("no\n");
         }
@@ -898,32 +878,12 @@ struct file * read_file(struct directory * root, char path_local[])
 }
 
 
-int find(struct directory * current_directory, char name[], char percorso[][PERCORSO_SIZE], char temp_percorso[])
+int find(struct directory * current_directory, char name[], char temp_percorso[])
 {
     int flag_trovato=0;
     
-    //Prima in profondità
-    if(current_directory->left_child!=NULL)
-    {
-        if(current_directory!=root)
-        {
-            if(strcmp(temp_percorso, "/")!=0) strcat(temp_percorso,"/");
-            strcat(temp_percorso, current_directory->name);
-            
-        }
-        
-        flag_trovato=find(current_directory->left_child, name, percorso,temp_percorso);
-        
-        for(int i=((int)strlen(temp_percorso)-(int)strlen(current_directory->name))-1;i<(int)strlen(temp_percorso);i++) temp_percorso[i]='\0';
-    }
-    
-    //Se non ci sono figli
-    if(strcmp(current_directory->name, name)==0)
-    {
-        sprintf(percorso[k],"%s/%s", temp_percorso,current_directory->name);
-        k++;
-        flag_trovato=1;
-    }
+    char file_trovato[255];
+    strcpy(file_trovato, "\0");
     
     //Cerca tra i file
     if(current_directory->file_tree!=NULL)
@@ -933,20 +893,59 @@ int find(struct directory * current_directory, char name[], char percorso[][PERC
         {
             if(strcmp(current_file->name, name)==0)
             {
-                if(current_directory==root) sprintf(percorso[k],"/%s", current_file->name);
-                else sprintf(percorso[k],"%s/%s/%s", temp_percorso,current_directory->name,current_file->name);
+                
+                if(strcmp(current_directory->name, current_file->name)>0)
+                {
+                    if(current_directory==root) printf("ok /%s\n", current_file->name);
+                    else printf("ok %s/%s/%s\n", temp_percorso,current_directory->name,current_file->name);
+                }
+                else strcpy(file_trovato, current_file->name);
                 flag_trovato=1;
-                k++;
+                break;
             }
             current_file=current_file->file_brother;
         }
         
     }
     
+    //Se non ci sono figli
+    if(strcmp(current_directory->name, name)==0)
+    {
+        printf("ok %s/%s\n", temp_percorso,current_directory->name);
+        flag_trovato=1;
+    }
+    
+    //Vai in profondità
+    if(current_directory->left_child!=NULL)
+    {
+        if(current_directory!=root)
+        {
+            if(strcmp(temp_percorso, "/")!=0) strcat(temp_percorso,"/");
+            strcat(temp_percorso, current_directory->name);
+        }
+        
+        if(flag_trovato==0) flag_trovato=find(current_directory->left_child, name,temp_percorso);
+        else find(current_directory->left_child, name,temp_percorso);
+        
+        for(int i=((int)strlen(temp_percorso)-(int)strlen(current_directory->name))-1;i<(int)strlen(temp_percorso);i++) temp_percorso[i]='\0';
+    }
+    
+    //Stampa il nome del file e questo è lessicograficamente dopo il nome della cartella
+    if(strcmp(file_trovato, "\0")!=0)
+    {
+        if(strcmp(current_directory->name, file_trovato)<0)
+        {
+            if(current_directory==root) printf("ok /%s\n", file_trovato);
+            else printf("ok %s/%s/%s\n", temp_percorso,current_directory->name,file_trovato);
+        }
+    }
+    
+    
+    
     //Vai al fratello
     if(current_directory->right_brother!=NULL)
     {
-        flag_trovato=find(current_directory->right_brother, name, percorso, temp_percorso);
+        flag_trovato=find(current_directory->right_brother, name, temp_percorso);
     }
     
     
