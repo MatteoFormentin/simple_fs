@@ -207,7 +207,6 @@ int main(int argc, const char * argv[]) {
                 //char percorso[PERCORSO_N][PERCORSO_SIZE];
                 char temp_percorso[PERCORSO_SIZE];
                 strcpy(temp_percorso, "\0");
-                printf("\n\neseguo la find\n\n");
                 if(find(root, path, temp_percorso)==0) printf("no\n");
             }
             else printf("no\n");
