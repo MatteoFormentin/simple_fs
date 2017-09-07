@@ -14,8 +14,7 @@
  */
 
 /*                !!!DA FARE!!!
- *  1-Max figli 255 e risorse nella stessa cartella 1024
- *  2-ordine lessicografico find
+ *
  */
 
 
@@ -28,7 +27,7 @@
 #define MAX_ALTEZZA 255
 #define MAX_AMPIEZZA 1024
 #define BUFFER_DIM 80000
-#define CONTENT_DIM 1000
+#define CONTENT_DIM 10000
 #define PERCORSO_SIZE 80000 //Lunghezza massima stringa
 
 //Prototipi
@@ -94,116 +93,12 @@ int main(int argc, const char * argv[]) {
     root->n_dir=0;
     root->n_file=0;
     
-    
-    //DEBUG ONLY
-    /*
-     create_directory(root, "/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     
-     create_file(root, "/dir0rid/aile");
-     create_file(root, "/dir0rid/dir0rid/aile");
-     create_file(root, "/dir0rid/dir0rid/dir0rid/aile");
-     
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_file(root, "/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/file");
-     create_directory(root, "/dir1rid");
-     create_directory(root, "/dir1rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid");
-     create_file(root, "/dir1rid/dir0rid/dir0rid/file");
-     create_file(root, "/dir1rid/dir0rid/dir0rid/file1");
-     create_file(root, "/dir1rid/dir0rid/dir0rid/file2");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_directory(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid");
-     create_file(root, "/dir1rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/dir0rid/file");
-     
-     printf("tutte create\n");
-     */
-    
-    
+    //LOOP PRINCIPALE
     while (1) {
         
-        // printf("\n\n\n\ninserire comando:\n "); //DEBUG ONLY
-        
-        
         //Acquisizione comando-percorso-contenuto
-        
         fgets(buffer, BUFFER_DIM, stdin);
         buffer[strlen(buffer)-1]='\0';
-        
-        
-        //!!!DOPO UN PO SI BLOCCA QUI
         
         //Split buffer
         command=strtok(buffer," \n");
@@ -312,6 +207,7 @@ int main(int argc, const char * argv[]) {
                 //char percorso[PERCORSO_N][PERCORSO_SIZE];
                 char temp_percorso[PERCORSO_SIZE];
                 strcpy(temp_percorso, "\0");
+                printf("\n\neseguo la find\n\n");
                 if(find(root, path, temp_percorso)==0) printf("no\n");
             }
             else printf("no\n");
@@ -777,7 +673,6 @@ struct file * go_to_path_file(struct directory * current_path, char path_local[]
         {
             file_name[i-last_path_before_new]=path_local[i+1];
         }
-        file_name[last_path_before_new+2]='\0';
     }
     
     //Caso file in root
@@ -930,7 +825,7 @@ int find(struct directory * current_directory, char name[], char temp_percorso[]
         for(int i=((int)strlen(temp_percorso)-(int)strlen(current_directory->name))-1;i<(int)strlen(temp_percorso);i++) temp_percorso[i]='\0';
     }
     
-    //Stampa il nome del file e questo è lessicograficamente dopo il nome della cartella
+    //Stampa il nome del file se questo è lessicograficamente dopo il nome della cartella
     if(strcmp(file_trovato, "\0")!=0)
     {
         if(strcmp(current_directory->name, file_trovato)<0)
