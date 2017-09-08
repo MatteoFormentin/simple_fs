@@ -14,6 +14,8 @@
  */
 
 /*                !!!DA FARE!!!
+ *  1-Controllare se esistono file e cartella con lo stesso nome
+ *
  *
  */
 
@@ -107,8 +109,6 @@ int main(int argc, const char * argv[]) {
         path=strtok(NULL," \n");
         if(path!=NULL) path[strlen(path)]='\0';
         
-        memset(content, '\0', CONTENT_DIM);
-        strcpy(content, "\0");
         char * temp;
         temp=strtok(NULL," \n");
         if(temp!=NULL)
@@ -138,7 +138,7 @@ int main(int argc, const char * argv[]) {
         //CREATE
         if(strcmp(command, "create")==0)
         {
-            if(check_path_format(path, command)==1)
+            if(check_path_format(path, command)==1 && strcmp(content, "\0")==0)
             {
                 create_file(root,path);
             }
@@ -148,7 +148,7 @@ int main(int argc, const char * argv[]) {
         //CREATE_DIR
         else if(strcmp(command, "create_dir")==0)
         {
-            if(check_path_format(path, command)==1)
+            if(check_path_format(path, command)==1 && strcmp(content, "\0")==0)
             {
                 create_directory(root, path);
             }
@@ -158,7 +158,7 @@ int main(int argc, const char * argv[]) {
         //READ
         else if(strcmp(command, "read")==0)
         {
-            if(check_path_format(path, command)==1)
+            if(check_path_format(path, command)==1 && strcmp(content, "\0")==0)
             {
                 read_file(root, path);
             }
@@ -181,7 +181,7 @@ int main(int argc, const char * argv[]) {
         //DELETE
         else if(strcmp(command, "delete")==0)
         {
-            if(check_path_format(path, command)==1)
+            if(check_path_format(path, command)==1 && strcmp(content, "\0")==0)
             {
                 delete(root, path, 0);
             }
@@ -191,7 +191,7 @@ int main(int argc, const char * argv[]) {
         //DELETE_R
         else if(strcmp(command, "delete_r")==0)
         {
-            if(check_path_format(path, command)==1)
+            if(check_path_format(path, command)==1 && strcmp(content, "\0")==0)
             {
                 delete(root, path, 1);
             }
@@ -201,7 +201,7 @@ int main(int argc, const char * argv[]) {
         //FIND
         else if(strcmp(command, "find")==0)
         {
-            if(check_path_format(path, command)==1)
+            if(check_path_format(path, command)==1 && strcmp(content, "\0")==0)
             {
                 
                 //char percorso[PERCORSO_N][PERCORSO_SIZE];
@@ -213,7 +213,7 @@ int main(int argc, const char * argv[]) {
         }
         
         //EXIT
-        else if(strcmp(command, "exit")==0)
+        else if(strcmp(command, "exit")==0 && strcmp(content, "\0")==0)
         {
             return 0;
         }
@@ -232,22 +232,34 @@ int main(int argc, const char * argv[]) {
         //ERRORE INPUT COMANDO
         else
         {
-            //printf("comando non valido\n"); //DEBUG ONLY
+            printf("no\n");
         }
         
+        
+        strcpy(buffer, "\0");
+        strcpy(content, "\0");
+
     }
+    
 }
 
 //FUNZIONI CONTROLLO CORRETTEZZA INPUT - IMPORTANTE: CONTROLLARE SE SERVE ESCLUDERE INPUT CON PATH O CONTENUTO DOVE NON PREVISTO
 
 int check_path_format(char path[], char command[])
 {
+    
+    char control_string[]="!?^[]-.,;@#§*+-|\' _><:=)(&%$£\"€";
+    
     if(path==NULL) return -1;
     if((path[0]!='/') && strcmp(command, "find")!=0)
     {
         //printf("\nerrore nel formato del percorso!\n"); //DEBUG ONLY
         return -1;
     }
+    
+   
+    if(strpbrk(path, control_string)!=NULL) return -1;
+    
     return 1;
 }
 
@@ -729,11 +741,6 @@ struct file * go_to_path_file(struct directory * current_path, char path_local[]
 
 struct file * write_file(struct directory * root, char path_local[], char * content_local)
 {
-    if(strlen(content_local)>255)
-    {
-        printf("no\n");
-        return NULL;
-    }
     struct file * file_to_write=go_to_path_file(root, path_local);
     //printf("\ncontent local: %s\n", content_local); //DEBUG ONLY
     if(file_to_write==NULL)
@@ -751,7 +758,6 @@ struct file * write_file(struct directory * root, char path_local[], char * cont
         //printf(" %s \n", file_to_write->content); //DEBUG ONLY
         return file_to_write;
     }
-    
 }
 
 
