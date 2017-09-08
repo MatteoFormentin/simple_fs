@@ -238,7 +238,7 @@ int main(int argc, const char * argv[]) {
         
         strcpy(buffer, "\0");
         strcpy(content, "\0");
-
+        
     }
     
 }
@@ -257,7 +257,7 @@ int check_path_format(char path[], char command[])
         return -1;
     }
     
-   
+    
     if(strpbrk(path, control_string)!=NULL) return -1;
     
     return 1;
@@ -441,11 +441,46 @@ struct directory * create_directory(struct directory * root, char path_local[])
     new_directory->n_file=0;
     new_directory->name=malloc((strlen(new_directory_name)+1)*sizeof(char));
     strcpy(new_directory->name, new_directory_name);
+
     
-    /* //DEBUG ONLY
-     if (strcmp(new_directory->name,"")==0) {
-     printf(" errore nella copia del nome");
-     }*/
+    //Controlla che non esistano file che si chiamano come la nuova directory
+    if(new_directory_path->file_tree!=NULL)
+    {
+        struct file * file_prec=new_directory_path->file_tree;
+        
+        if(strcmp(new_directory->name, file_prec->name)==0) //Controllo se esiste un file con lo stesso nome come primo figlio
+        {
+            //printf("directory già esistente, return\n"); //DEBUG ONLY
+            printf("no\n");
+            free(new_directory->name);
+            free(new_directory);
+            return NULL;
+        }
+        
+        
+        while (file_prec->file_brother!=NULL)
+        {
+            if(strcmp(new_directory->name, file_prec->name)==0) //Controllo se esiste un file con lo stesso nome come altro figlio
+            {
+                //printf("directory già esistente, return\n"); //DEBUG ONLY
+                printf("no\n");
+                free(new_directory->name);
+                free(new_directory);
+                return NULL;
+            }
+            file_prec=file_prec->file_brother;
+        }
+        
+        if(strcmp(new_directory->name, file_prec->name)==0) //Controllo se esiste un file con lo stesso nome come ultimo figlio
+        {
+            //printf("directory già esistente, return\n"); //DEBUG ONLY
+            printf("no\n");
+            free(new_directory->name);
+            free(new_directory);
+            return NULL;
+        }
+        
+    }
     
     //Caso 1: nessun figlio sinistro esistente
     if (new_directory_path->left_child==NULL)
@@ -547,7 +582,7 @@ struct file * create_file(struct directory * root, char path_local[])
         strncpy(path_where_create_file,path_local,last_path_before_new);
         path_where_create_file[last_path_before_new] = '\0';
         container_directory_path=go_to_path_directory(root, path_where_create_file);
-
+        
         if(container_directory_path==NULL)
         {
             //printf("\nPercorso creazione non trovato, return\n"); //DEBUG ONLY
@@ -603,6 +638,48 @@ struct file * create_file(struct directory * root, char path_local[])
     new_file->file_brother=NULL;
     new_file->content=NULL;
     
+    
+    //Controlla che non esistano directory che si chiamano come il nuovo file
+    
+    if (container_directory_path->left_child!=NULL)
+    {
+        
+        struct directory * curr_dir=container_directory_path->left_child;
+        
+        
+        if(strcmp(new_file->name, curr_dir->name)==0) //Controllo se esiste una directory con lo stesso nome come primo figlio
+        {
+            //printf("directory già esistente, return\n"); //DEBUG ONLY
+            printf("no\n");
+            free(new_file->name);
+            free(new_file);
+            return NULL;
+        }
+        
+        
+        while (strcmp(new_file->name, curr_dir->name)<=0) //Caso 2: esistono dei figli->scorri fino alla prima posizione libera a destra
+        {
+            
+            if(strcmp(new_file->name, curr_dir->name)==0) //Directory con lo stesso nome come figli successivi
+            {
+                //printf("directory già esistente, return\n"); //DEBUG ONLY
+                printf("no\n");
+                free(new_file->name);
+                free(new_file);
+                return NULL;
+            }
+            
+            if(curr_dir->right_brother!=NULL)
+            {
+                curr_dir=curr_dir->right_brother;
+            }
+            else break;
+        }
+        
+    }
+    
+    
+    
     //Caso 1: nessun figlio esistente
     if (container_directory_path->file_tree==NULL)
     {
@@ -610,41 +687,36 @@ struct file * create_file(struct directory * root, char path_local[])
     }
     else
     {
-        //ampiezza++;
         struct file * file_prec=container_directory_path->file_tree;
         
         if(strcmp(new_file->name, file_prec->name)==0) //Controllo se esiste un file con lo stesso nome come primo figlio
         {
             //printf("directory già esistente, return\n"); //DEBUG ONLY
             printf("no\n");
+            free(new_file->name);
             free(new_file);
             return NULL;
         }
         
         
-        while (file_prec->file_brother!=NULL) {
+        while (file_prec->file_brother!=NULL)
+        {
             if(strcmp(new_file->name, file_prec->name)==0) //Controllo se esiste un file con lo stesso nome come altro figlio
             {
                 //printf("directory già esistente, return\n"); //DEBUG ONLY
                 printf("no\n");
+                free(new_file->name);
                 free(new_file);
                 return NULL;
             }
             file_prec=file_prec->file_brother;
-            /*   ampiezza++;
-             printf("\nampiezza dir+file: %d\n", ampiezza);
-             
-             if(ampiezza>MAX_AMPIEZZA-1)
-             {
-             printf("no\n");
-             return NULL;
-             }*/
         }
         
         if(strcmp(new_file->name, file_prec->name)==0) //Controllo se esiste un file con lo stesso nome come ultimo figlio
         {
             //printf("directory già esistente, return\n"); //DEBUG ONLY
             printf("no\n");
+            free(new_file->name);
             free(new_file);
             return NULL;
         }
