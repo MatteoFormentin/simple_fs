@@ -378,8 +378,7 @@ struct directory * create_directory(struct directory * root, char path_local[])
     {
         //Estrazione percorso dal parametro percorso
         char path_where_create_dir[strlen(path_local)+1];
-        strncpy(path_where_create_dir,path_local,last_path_before_new);
-        path_where_create_dir[last_path_before_new] = '\0';
+        snprintf(path_where_create_dir,last_path_before_new+1,"%s",path_local);
         new_directory_path=go_to_path_directory(root, path_where_create_dir);
         new_directory_father=new_directory_path;
         
@@ -579,8 +578,7 @@ struct file * create_file(struct directory * root, char path_local[])
         
         //Estrazione percorso dal parametro percorso
         char path_where_create_file[strlen(path_local)+1];
-        strncpy(path_where_create_file,path_local,last_path_before_new);
-        path_where_create_file[last_path_before_new] = '\0';
+        snprintf(path_where_create_file,last_path_before_new+1,"%s",path_local);
         container_directory_path=go_to_path_directory(root, path_where_create_file);
         
         if(container_directory_path==NULL)
@@ -741,8 +739,7 @@ struct file * go_to_path_file(struct directory * current_path, char path_local[]
     {
         //Estrazione percorso dal parametro percorso
         char container_directory_name[strlen(path_local)+1];
-        strncpy(container_directory_name,path_local,last_path_before_new);
-        container_directory_name[last_path_before_new] = '\0';
+        snprintf(container_directory_name,last_path_before_new+1,"%s",path_local);
         container_directory_path=go_to_path_directory(root, container_directory_name);
         
         if(container_directory_path==NULL)
