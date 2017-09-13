@@ -440,7 +440,7 @@ struct directory * create_directory(struct directory * root, char path_local[])
     new_directory->n_file=0;
     new_directory->name=malloc((strlen(new_directory_name)+1)*sizeof(char));
     strcpy(new_directory->name, new_directory_name);
-
+    
     
     //Controlla che non esistano file che si chiamano come la nuova directory
     if(new_directory_path->file_tree!=NULL)
@@ -521,14 +521,15 @@ struct directory * create_directory(struct directory * root, char path_local[])
             else break;
         }
         
-        /*
-         if(strcmp(new_directory_path->name, new_directory_name)==0) //Directory con lo stesso nome come ultimo figlio
-         {
-         //printf("directory già esistente, return\n"); //DEBUG ONLY
-         printf("no\n");
-         free(new_directory);
-         return NULL;
-         }*/
+        
+        if(strcmp(new_directory_path->name, new_directory_name)==0) //Directory con lo stesso nome come ultimo figlio
+        {
+            //printf("directory già esistente, return\n"); //DEBUG ONLY
+            printf("no\n");
+            free(new_directory);
+            return NULL;
+        }
+        
         if(prec->left_child==new_directory_path)
         {
             if(strcmp(new_directory_path->name, new_directory_name)>0)
@@ -550,13 +551,6 @@ struct directory * create_directory(struct directory * root, char path_local[])
         
         
         
-        /*
-         if(new_directory_path->right_brother->right_brother!=NULL)
-         {
-         new_directory->right_brother=new_directory_path->right_brother->right_brother;
-         }
-         
-         new_directory_path->right_brother=new_directory;*/
     }
     
     printf("ok\n");
@@ -696,7 +690,6 @@ struct file * create_file(struct directory * root, char path_local[])
             return NULL;
         }
         
-        
         while (file_prec->file_brother!=NULL)
         {
             if(strcmp(new_file->name, file_prec->name)==0) //Controllo se esiste un file con lo stesso nome come altro figlio
@@ -721,6 +714,7 @@ struct file * create_file(struct directory * root, char path_local[])
         
         file_prec->file_brother=new_file;
     }
+    
     container_directory_path->n_file++;
     printf("ok\n");
     return new_file;
@@ -784,7 +778,8 @@ struct file * go_to_path_file(struct directory * current_path, char path_local[]
         return current_file;
     }
     
-    while (current_file->file_brother!=NULL) {
+    while (current_file->file_brother!=NULL)
+    {
         if(strcmp(current_file->name, file_name)==0) //Controllo se esiste una file con lo stesso nome come altro figlio
         {
             //printf("file trovato\n"); //DEBUG ONLY
@@ -820,6 +815,7 @@ struct file * write_file(struct directory * root, char path_local[], char * cont
     }
     else
     {
+        if(file_to_write->content!=NULL) free(file_to_write->content);
         file_to_write->content=malloc((strlen(content_local)+1)*sizeof(char));
         strcpy(file_to_write->content, "\0");
         strcpy(file_to_write->content, content_local);
@@ -862,7 +858,6 @@ int find(struct directory * current_directory, char name[], char temp_percorso[]
         {
             if(strcmp(current_file->name, name)==0)
             {
-                
                 if(strcmp(current_directory->name, current_file->name)>0)
                 {
                     if(current_directory==root) printf("ok /%s\n", current_file->name);
@@ -877,7 +872,7 @@ int find(struct directory * current_directory, char name[], char temp_percorso[]
         
     }
     
-    //Se non ci sono figli
+    //Controlla il nome della dir corrente
     if(strcmp(current_directory->name, name)==0)
     {
         printf("ok %s/%s\n", temp_percorso,current_directory->name);
@@ -902,22 +897,21 @@ int find(struct directory * current_directory, char name[], char temp_percorso[]
     //Stampa il nome del file se questo è lessicograficamente dopo il nome della cartella
     if(strcmp(file_trovato, "\0")!=0)
     {
-        if(strcmp(current_directory->name, file_trovato)<0)
+        if(strcmp(current_directory->name, file_trovato)<=0)
         {
             if(current_directory==root) printf("ok /%s\n", file_trovato);
             else printf("ok %s/%s/%s\n", temp_percorso,current_directory->name,file_trovato);
         }
     }
     
-    
-    
     //Vai al fratello
     if(current_directory->right_brother!=NULL)
     {
-        flag_trovato=find(current_directory->right_brother, name, temp_percorso);
+        if(flag_trovato==0) flag_trovato=find(current_directory->right_brother, name, temp_percorso);
+        else flag_trovato=find(current_directory->right_brother, name, temp_percorso);
+        
     }
-    
-    
+
     if(flag_trovato==1)return 1;
     else return 0;
 }
