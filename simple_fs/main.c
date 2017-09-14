@@ -231,7 +231,7 @@ int main(int argc, const char * argv[]) {
         //ERRORE INPUT COMANDO
         else
         {
-            printf("no\n", command);
+            printf("no\n");
         }
         
         
