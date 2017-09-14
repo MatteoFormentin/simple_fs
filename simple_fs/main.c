@@ -14,8 +14,7 @@
  */
 
 /*                !!!DA FARE!!!
- *  1-Controllare se esistono file e cartella con lo stesso nome
- *
+ 
  *
  */
 
@@ -232,7 +231,7 @@ int main(int argc, const char * argv[]) {
         //ERRORE INPUT COMANDO
         else
         {
-            printf("comando errato: %s\n", command);
+            printf("no\n", command);
         }
         
         
