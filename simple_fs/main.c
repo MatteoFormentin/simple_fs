@@ -232,7 +232,7 @@ int main(int argc, const char * argv[]) {
         //ERRORE INPUT COMANDO
         else
         {
-            printf("no\n");
+            printf("comando errato: %s\n", command);
         }
         
         
@@ -257,6 +257,7 @@ int check_path_format(char path[], char command[])
         return -1;
     }
     
+    if(strlen(path)==1) return -1; //Percorso vuoto
     
     if(strpbrk(path, control_string)!=NULL) return -1;
     
@@ -926,8 +927,9 @@ void delete(struct directory * root, char path_local[], int flag)
     struct directory * directory_to_delete=go_to_path_directory(root, path_local);
     
     //Delete directory
-    if(directory_to_delete!=NULL) //Necessario per escludere il ricorsivo
+    if(directory_to_delete!=NULL)
     {
+        //Necessario per escludere il ricorsivo
         if((directory_to_delete->left_child!=NULL || directory_to_delete->file_tree!=NULL) && flag==0 )
         {
             //printf("\nfile nella cartella"); //DEBUG ONLY
