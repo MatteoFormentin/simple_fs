@@ -521,7 +521,6 @@ struct directory * create_directory(struct directory * root, char path_local[])
             else break;
         }
         
-        
         if(strcmp(new_directory_path->name, new_directory_name)==0) //Directory con lo stesso nome come ultimo figlio
         {
             //printf("directory già esistente, return\n"); //DEBUG ONLY
@@ -548,9 +547,6 @@ struct directory * create_directory(struct directory * root, char path_local[])
             prec->right_brother=new_directory;
         }
         else new_directory_path->right_brother=new_directory;
-        
-        
-        
     }
     
     printf("ok\n");
@@ -569,7 +565,6 @@ struct file * create_file(struct directory * root, char path_local[])
     //Caso creazione non in root
     if (last_path_before_new!=0)
     {
-        
         //Estrazione percorso dal parametro percorso
         char path_where_create_file[strlen(path_local)+1];
         snprintf(path_where_create_file,last_path_before_new+1,"%s",path_local);
@@ -611,7 +606,6 @@ struct file * create_file(struct directory * root, char path_local[])
         new_file_name[i+1]='\0';
     }
     
-    
     if(strlen(new_file_name)>255)
     {
         printf("no\n");
@@ -625,7 +619,7 @@ struct file * create_file(struct directory * root, char path_local[])
     }
     
     struct file * new_file=malloc(sizeof(struct file));
-    new_file->name=malloc(strlen((new_file_name)+1)*sizeof(char));
+    new_file->name=calloc(2*strlen((new_file_name)+1),sizeof(char));
     strcpy(new_file->name, new_file_name);
     new_file->file_brother=NULL;
     new_file->content=NULL;
@@ -847,7 +841,7 @@ int find(struct directory * current_directory, char name[], char temp_percorso[]
 {
     int flag_trovato=0;
     
-    char file_trovato[255];
+    char file_trovato[300];
     strcpy(file_trovato, "\0");
     
     //Cerca tra i file
@@ -869,7 +863,6 @@ int find(struct directory * current_directory, char name[], char temp_percorso[]
             }
             current_file=current_file->file_brother;
         }
-        
     }
     
     //Controlla il nome della dir corrente
@@ -908,11 +901,11 @@ int find(struct directory * current_directory, char name[], char temp_percorso[]
     if(current_directory->right_brother!=NULL)
     {
         if(flag_trovato==0) flag_trovato=find(current_directory->right_brother, name, temp_percorso);
-        else flag_trovato=find(current_directory->right_brother, name, temp_percorso);
+        else find(current_directory->right_brother, name, temp_percorso);
         
     }
-
-    if(flag_trovato==1)return 1;
+    
+    if(flag_trovato==1) return 1;
     else return 0;
 }
 
@@ -965,13 +958,19 @@ void delete(struct directory * root, char path_local[], int flag)
         if(flag==1 && directory_to_delete->left_child!=NULL) //Delete ricorsiva
         {
             delete_child(directory_to_delete->left_child);
+            father_folder->n_dir--;
+            printf("ok\n");
+            return;
         }
         
-        free(directory_to_delete->name);
-        free(directory_to_delete);
-        father_folder->n_dir--;
-        printf("ok\n");
-        return;
+        if(flag==0)
+        {
+            free(directory_to_delete->name);
+            free(directory_to_delete);
+            father_folder->n_dir--;
+            printf("ok\n");
+            return;
+        }
     }
     
     //Delete file
@@ -994,12 +993,7 @@ void delete(struct directory * root, char path_local[], int flag)
                 i++;
             }
             file_name[i]='\0';
-            
-            /*
-             printf("\nprec dir: %s", prec_folder->name);
-             
-             printf("\n\nfile: %s\n", file_name);
-             */
+
             int trovato=0;
             if(strcmp(file_to_delete->name, file_name)==0) //Controllo se esiste un file con lo stesso nome come primo figlio
             {
@@ -1053,9 +1047,6 @@ void delete(struct directory * root, char path_local[], int flag)
                         }
                     }
                     
-                    
-                    //memset(file_to_delete->content, '\0', 255);
-                    //strcpy(file_to_delete->content, "\0");
                     free(file_to_delete->name);
                     free(file_to_delete->content);
                     free(file_to_delete);
@@ -1078,11 +1069,11 @@ void delete_child(struct directory * directory)
     {
         delete_child(directory->left_child);
     }
+    
     if(directory->right_brother!=NULL)
     {
         delete_child(directory->right_brother);
     }
-    
     
     if(directory->file_tree!=NULL)
     {
